@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tabel-v2';
+const CACHE_NAME = 'tabel-v6';
 const URLS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
