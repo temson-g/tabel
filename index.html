@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Табель работ</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Табель">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+    <style>
+        :root {
+            --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
+            --brd:#334155;--txt:#f1f5f9;--txt2:#94a3b8;--txt3:#64748b;
+            --blue:#3b82f6;--green:#10b981;--orange:#f59e0b;
+            --red:#ef4444;--purple:#8b5cf6;--cyan:#06b6d4;--pink:#ec4899;
+            --r:14px;--sab:env(safe-area-inset-bottom,0px);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            background:var(--bg);color:var(--txt);
+            min-height:100vh;min-height:100dvh;
+            overflow-x:hidden;-webkit-font-smoothing:antialiased;
+        }
+
+        /* === ШАПКА === */
+        .hdr{
+            background:linear-gradient(180deg,#1e3a5f,var(--bg));
+            padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));
+            display:flex;justify-content:space-between;align-items:center;
+            position:sticky;top:0;z-index:100;
+            border-bottom:1px solid rgba(51,65,85,.5);
+        }
+        .hdr-l{display:flex;align-items:center;gap:10px}
+        .hdr-l span{font-size:26px}
+        .hdr-l h1{
+            font-size:17px;font-weight:800;
+            background:linear-gradient(135deg,#60a5fa,#a78bfa);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        .hdr-r{display:flex;align-items:center;gap:10px}
+        .si{display:flex;align-items:center;gap:6px}
+        .sd{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);transition:.3s}
+        .sd.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+        .sl{font-size:11px;color:var(--txt2);font-weight:600}
+
+        /* === КНОПКИ === */
+        .btn{
+            padding:8px 14px;border:none;border-radius:10px;
+            font-size:13px;font-weight:700;cursor:pointer;
+            transition:.15s;display:inline-flex;align-items:center;
+            gap:5px;white-space:nowrap;font-family:inherit;
+        }
+        .btn:active{transform:scale(.93);opacity:.8}
+        .b-gh{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+        .b-gr{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+        .b-pr{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 4px 15px rgba(59,130,246,.3)}
+        .b-sc{background:var(--bg3);color:var(--txt2)}
+        .b-sm{padding:5px 10px;font-size:12px;border-radius:8px}
+
+        /* === МЕСЯЦ === */
+        .mnav{
+            display:flex;align-items:center;justify-content:center;
+            gap:16px;padding:14px;background:var(--bg2);
+            border-bottom:1px solid var(--brd);
+        }
+        .mnav button{
+            width:40px;height:40px;border-radius:12px;
+            border:1px solid var(--brd);background:var(--bg);
+            color:var(--txt);font-size:18px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .mnav button:active{background:var(--blue)}
+        .mtxt{font-size:18px;font-weight:800;min-width:200px;text-align:center}
+
+        /* === СТАТИСТИКА === */
+        .stats{
+            display:grid;grid-template-columns:repeat(5,1fr);
+            gap:5px;padding:10px 12px;background:var(--bg2);
+            border-bottom:1px solid var(--brd);
+        }
+        .stb{
+            text-align:center;padding:8px 2px;background:var(--bg);
+            border-radius:12px;border:1px solid var(--brd);
+        }
+        .stv{font-size:18px;font-weight:900;line-height:1}
+        .stv.c1{color:var(--blue)}.stv.c2{color:var(--cyan)}
+        .stv.c3{color:var(--orange)}.stv.c4{color:var(--green)}
+        .stv.c5{color:var(--purple)}
+        .stl{font-size:8px;color:var(--txt3);margin-top:3px;text-transform:uppercase;letter-spacing:.2px;font-weight:700;line-height:1.2}
+        .st-icon{font-size:14px;display:block;margin-bottom:2px}
+
+        /* === ФИЛЬТРЫ === */
+        .fbar{
+            display:flex;gap:6px;padding:10px 12px;overflow-x:auto;
+            -webkit-overflow-scrolling:touch;scrollbar-width:none;
+            border-bottom:1px solid var(--brd);
+        }
+        .fbar::-webkit-scrollbar{display:none}
+        .chip{
+            padding:6px 14px;border-radius:20px;border:1px solid var(--brd);
+            background:var(--bg2);color:var(--txt3);font-size:12px;
+            font-weight:600;cursor:pointer;white-space:nowrap;
+            transition:.2s;flex-shrink:0;
+        }
+        .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 10px rgba(59,130,246,.3)}
+
+        /* === ТУЛБАР === */
+        .tbar{display:flex;gap:8px;padding:8px 12px;justify-content:flex-end;flex-wrap:wrap}
+        .tb{
+            padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;
+            cursor:pointer;border:1px solid var(--brd);background:var(--bg2);
+            color:var(--txt3);display:flex;align-items:center;gap:4px;font-family:inherit;
+        }
+        .tb:active{opacity:.7}
+        .tb-pdf{background:rgba(139,92,246,.12);color:var(--purple);border-color:rgba(139,92,246,.25)}
+
+        /* === СПИСОК === */
+        .list{padding:8px 12px;padding-bottom:calc(90px + var(--sab))}
+
+        /* === СТРОКА ДАТЫ === */
+        .dh{
+            display:flex;align-items:center;gap:10px;margin:14px 0 8px;
+        }
+        .dl-txt{
+            font-size:13px;font-weight:700;color:var(--blue);white-space:nowrap;
+        }
+        .dl-hours{
+            background:rgba(6,182,212,.12);color:#22d3ee;
+            padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;
+            white-space:nowrap;border:1px solid rgba(6,182,212,.2);
+            transition:.15s;
+        }
+        .dl-hours.clickable{cursor:pointer}
+        .dl-hours.clickable:active{background:rgba(6,182,212,.25);transform:scale(.95)}
+        .dl-hours.empty{color:var(--txt3);border-color:var(--brd);background:rgba(100,116,139,.1)}
+        .dl-line{flex:1;height:1px;background:linear-gradient(90deg,var(--brd),transparent)}
+
+        /* === КАРТОЧКИ === */
+        .card{
+            background:var(--bg2);border:1px solid var(--brd);
+            border-radius:var(--r);padding:14px;margin-bottom:10px;
+            transition:.2s;position:relative;overflow:hidden;
+        }
+        .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+        .card.tp-auto::before{background:var(--orange)}
+        .card.tp-elec::before{background:var(--cyan)}
+        .card.tp-base::before{background:var(--green)}
+        .card.tp-help::before{background:var(--pink)}
+        .card.tp-oth::before{background:var(--txt3)}
+
+        .ctop{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+        .tag{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.3px}
+        .t-type{background:rgba(16,185,129,.12);color:#34d399}
+        .t-st{background:rgba(59,130,246,.12);color:#60a5fa}
+        .t-wait{background:rgba(245,158,11,.12);color:#fbbf24}
+        .t-prog{background:rgba(139,92,246,.12);color:#a78bfa}
+
+        .cobj{font-size:16px;font-weight:800;color:var(--txt);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+        .cdsc{
+            font-size:13px;line-height:1.6;color:var(--txt2);
+            background:var(--bg);padding:10px 12px;border-radius:10px;
+            border-left:3px solid var(--blue);
+        }
+        .cbot{display:flex;gap:6px;margin-top:10px;justify-content:flex-end}
+
+        /* === PDF === */
+        .pdf-section{
+            background:var(--bg2);border:1px solid var(--brd);
+            border-radius:var(--r);padding:14px;margin-bottom:10px;
+        }
+        .pdf-item{
+            display:flex;align-items:center;gap:10px;
+            padding:10px;background:var(--bg);border-radius:10px;
+            margin-bottom:8px;border:1px solid var(--brd);
+        }
+        .pdf-icon{font-size:28px}
+        .pdf-info{flex:1}
+        .pdf-name{font-size:13px;font-weight:700;color:var(--txt)}
+        .pdf-size{font-size:11px;color:var(--txt3);margin-top:2px}
+        .pdf-actions{display:flex;gap:6px}
+
+        /* === FAB === */
+        .fab{
+            position:fixed;bottom:calc(20px + var(--sab));right:16px;
+            width:58px;height:58px;border-radius:18px;
+            background:linear-gradient(135deg,var(--blue),var(--purple));
+            color:#fff;border:none;font-size:30px;cursor:pointer;
+            box-shadow:0 6px 25px rgba(59,130,246,.45);
+            z-index:50;display:none;align-items:center;justify-content:center;
+        }
+        .fab:active{transform:scale(.88)}
+        .fab.show{display:flex}
+
+        /* === МОДАЛКИ === */
+        .ov{
+            display:none;position:fixed;inset:0;
+            background:rgba(0,0,0,.65);backdrop-filter:blur(6px);
+            -webkit-backdrop-filter:blur(6px);z-index:200;
+            justify-content:center;align-items:flex-end;
+        }
+        .ov.open{display:flex}
+        .sht{
+            background:var(--bg2);border-radius:24px 24px 0 0;
+            padding:20px 16px;padding-bottom:calc(20px + var(--sab));
+            width:100%;max-width:500px;max-height:93vh;max-height:93dvh;
+            overflow-y:auto;animation:shu .3s ease;
+        }
+        @keyframes shu{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        .shn{width:36px;height:4px;background:var(--bg3);border-radius:4px;margin:0 auto 16px}
+        .sht h2{font-size:20px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+
+        .fg{margin-bottom:14px}
+        .fgl{display:block;font-size:11px;font-weight:700;color:var(--txt3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+        .fgi,.fgs,.fgt{
+            width:100%;padding:11px 14px;border-radius:12px;
+            border:1px solid var(--brd);background:var(--bg);
+            color:var(--txt);font-size:15px;font-family:inherit;
+            transition:border-color .2s;-webkit-appearance:none;
+        }
+        .fgi:focus,.fgs:focus,.fgt:focus{outline:none;border-color:var(--blue)}
+        .fgt{min-height:100px;resize:vertical;line-height:1.5}
+        .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .fbtn{display:flex;gap:10px;margin-top:18px}
+        .fbtn .btn{flex:1;justify-content:center;padding:13px;font-size:15px}
+
+        /* === AI === */
+        .aib{margin-top:10px}
+        .ai-btn{
+            width:100%;padding:10px;border-radius:12px;
+            background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(6,182,212,.15));
+            color:var(--purple);border:1px solid rgba(139,92,246,.25);
+            font-size:13px;font-weight:700;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;
+        }
+        .ai-btn:active{opacity:.7}
+        .ai-ld{display:none;align-items:center;justify-content:center;gap:8px;color:var(--purple);font-size:13px;margin-top:8px;padding:10px}
+        .sp{width:16px;height:16px;border:2px solid var(--purple);border-top-color:transparent;border-radius:50%;animation:spn .7s linear infinite}
+        @keyframes spn{to{transform:rotate(360deg)}}
+        .ai-o{display:none;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6;color:#c4b5fd}
+        .ai-ok{display:none;width:100%;margin-top:8px;padding:9px;border-radius:10px;background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.25);font-size:13px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit}
+
+        /* === PIN === */
+        .pinr{display:flex;gap:14px;justify-content:center;margin:24px 0}
+        .pinb{
+            width:52px;height:60px;text-align:center;font-size:26px;
+            font-weight:800;border-radius:14px;border:2px solid var(--brd);
+            background:var(--bg);color:var(--txt);
+        }
+        .pinb:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+        .perr{color:var(--red);text-align:center;font-size:13px;display:none;margin-top:8px;font-weight:600}
+
+        /* === PDF UPLOAD === */
+        .pdf-upload-area{
+            border:2px dashed var(--brd);border-radius:16px;
+            padding:30px 20px;text-align:center;cursor:pointer;
+            transition:.2s;margin-bottom:14px;
+        }
+        .pdf-upload-area:hover,.pdf-upload-area.drag{border-color:var(--purple);background:rgba(139,92,246,.05)}
+        .pdf-upload-area .ico{font-size:40px;margin-bottom:8px}
+        .pdf-upload-area p{font-size:13px;color:var(--txt2)}
+        .pdf-upload-area small{font-size:11px;color:var(--txt3)}
+
+        /* === МОДАЛКА ЧАСОВ === */
+        .hours-modal-body{text-align:center;padding:10px 0}
+        .hours-modal-date{font-size:16px;font-weight:700;color:var(--blue);margin-bottom:16px}
+        .hours-grid{
+            display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+            margin-bottom:16px;
+        }
+        .hours-chip{
+            width:56px;height:56px;border-radius:14px;
+            border:2px solid var(--brd);background:var(--bg);
+            color:var(--txt);font-size:20px;font-weight:800;
+            cursor:pointer;display:flex;align-items:center;justify-content:center;
+            transition:.15s;font-family:inherit;
+        }
+        .hours-chip:active{transform:scale(.9)}
+        .hours-chip.sel{
+            border-color:var(--cyan);background:rgba(6,182,212,.15);
+            color:var(--cyan);box-shadow:0 0 12px rgba(6,182,212,.25);
+        }
+        .hours-chip-label{font-size:11px;color:var(--txt3);margin-top:-4px;margin-bottom:10px}
+        .hours-custom{
+            display:flex;align-items:center;justify-content:center;gap:10px;
+            margin-top:8px;
+        }
+        .hours-custom-input{
+            width:70px;height:50px;text-align:center;
+            font-size:24px;font-weight:800;border-radius:12px;
+            border:2px solid var(--brd);background:var(--bg);
+            color:var(--cyan);font-family:inherit;
+        }
+        .hours-custom-input:focus{outline:none;border-color:var(--cyan)}
+        .hours-custom-label{font-size:14px;color:var(--txt2)}
+        .hours-clear{
+            margin-top:12px;font-size:12px;color:var(--txt3);
+            cursor:pointer;text-decoration:underline;
+        }
+
+        .empty{text-align:center;padding:50px 20px;color:var(--txt3)}
+        .empty-i{font-size:56px;margin-bottom:12px}
+        .empty-m{font-size:15px;color:var(--txt2)}
+        .empty-s{font-size:12px;margin-top:6px}
+
+        .splash{
+            position:fixed;inset:0;background:var(--bg);
+            display:flex;flex-direction:column;align-items:center;
+            justify-content:center;z-index:999;transition:opacity .4s;
+        }
+        .splash.bye{opacity:0;pointer-events:none}
+        .splash-i{font-size:56px;animation:bob 1.2s infinite}
+        .splash-t{color:var(--txt3);font-size:14px;margin-top:14px}
+        @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+        .ibanner{
+            display:none;position:fixed;
+            bottom:calc(85px + var(--sab));left:12px;right:12px;
+            background:var(--bg2);border:1px solid var(--brd);
+            border-radius:16px;padding:14px;z-index:60;
+            box-shadow:0 8px 30px rgba(0,0,0,.4);align-items:center;gap:12px;
+        }
+        .ibanner.show{display:flex}
+        .ibanner-t{flex:1;font-size:13px;color:var(--txt2);line-height:1.4}
+        .ibanner-t strong{color:var(--txt)}
+
+        .pdf-viewer{
+            position:fixed;inset:0;background:var(--bg);z-index:250;
+            display:none;flex-direction:column;
+        }
+        .pdf-viewer.open{display:flex}
+        .pdf-viewer-hdr{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--brd);
+        }
+        .pdf-viewer-hdr h3{font-size:15px;flex:1;margin:0 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .pdf-viewer iframe{flex:1;width:100%;border:none}
+
+        @media(min-width:768px){
+            .sht{border-radius:24px;margin:auto}
+            .ov{align-items:center;padding:20px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+    <div class="splash-i">⚡</div>
+    <div class="splash-t">Загрузка табеля...</div>
+</div>
+
+<div class="ibanner" id="iBanner">
+    <span style="font-size:32px">⚡</span>
+    <div class="ibanner-t"><strong>Установить приложение?</strong><br>Работает как обычное приложение</div>
+    <button class="btn b-pr b-sm" onclick="installPWA()">Да</button>
+    <button class="btn b-sc b-sm" onclick="dismissPWA()">✕</button>
+</div>
+
+<header class="hdr">
+    <div class="hdr-l"><span>⚡</span><h1>Табель работ</h1></div>
+    <div class="hdr-r">
+        <div class="si">
+            <div class="sd" id="sDot"></div>
+            <span class="sl" id="sLbl">Гость</span>
+        </div>
+        <button class="btn b-gh" id="aBtn" onclick="toggleAuth()">🔐</button>
+    </div>
+</header>
+
+<div class="mnav">
+    <button onclick="navM(-1)">◀</button>
+    <div class="mtxt" id="mTxt"></div>
+    <button onclick="navM(1)">▶</button>
+</div>
+
+<!-- СТАТИСТИКА -->
+<div class="stats">
+    <div class="stb">
+        <div class="st-icon">📅</div>
+        <div class="stv c1" id="s1">0</div>
+        <div class="stl">Смен</div>
+    </div>
+    <div class="stb">
+        <div class="st-icon">🕐</div>
+        <div class="stv c2" id="s2">0</div>
+        <div class="stl">Часов</div>
+    </div>
+    <div class="stb">
+        <div class="st-icon">🔌</div>
+        <div class="stv c3" id="s3">0</div>
+        <div class="stl">Авто-эл.</div>
+    </div>
+    <div class="stb">
+        <div class="st-icon">💡</div>
+        <div class="stv c4" id="s4">0</div>
+        <div class="stl">Электр.</div>
+    </div>
+    <div class="stb">
+        <div class="st-icon">📦</div>
+        <div class="stv c5" id="s5">0</div>
+        <div class="stl">Другое</div>
+    </div>
+</div>
+
+<!-- ФИЛЬТРЫ -->
+<div class="fbar">
+    <div class="chip on" data-f="all" onclick="flt('all')">Все</div>
+    <div class="chip" data-f="auto" onclick="flt('auto')">🔌 Автоэлектрика</div>
+    <div class="chip" data-f="electro" onclick="flt('electro')">💡 Электрика</div>
+    <div class="chip" data-f="base" onclick="flt('base')">🏢 На базе</div>
+    <div class="chip" data-f="help" onclick="flt('help')">📦 Подсобные</div>
+    <div class="chip" data-f="other" onclick="flt('other')">📋 Другое</div>
+    <div class="chip" data-f="pdf" onclick="flt('pdf')">📄 PDF</div>
+</div>
+
+<div class="tbar">
+    <button class="tb" onclick="toCSV()">📊 Excel</button>
+    <button class="tb" onclick="toPrint()">🖨 Печать</button>
+    <button class="tb tb-pdf" onclick="openPdfUpload()" id="pdfUpBtn" style="display:none">📎 PDF</button>
+</div>
+
+<div class="list" id="list"></div>
+
+<button class="fab" id="fab" onclick="addNew()">＋</button>
+
+<!-- PDF ПРОСМОТР -->
+<div class="pdf-viewer" id="pdfViewer">
+    <div class="pdf-viewer-hdr">
+        <button class="btn b-gr b-sm" onclick="closePdfView()">✕</button>
+        <h3 id="pdfViewTitle">Документ</h3>
+        <button class="btn b-gh b-sm" onclick="downloadPdf()">⬇</button>
+    </div>
+    <iframe id="pdfFrame"></iframe>
+</div>
+
+<!-- ЛОГИН -->
+<div class="ov" id="ovLogin">
+    <div class="sht">
+        <div class="shn"></div>
+        <h2>🔐 Вход</h2>
+        <p style="text-align:center;color:var(--txt3);font-size:14px">Введите PIN-код</p>
+        <div class="pinr">
+            <input class="pinb" type="tel" maxlength="1" id="d1" oninput="pnx(1)" onkeydown="pbk(event,1)">
+            <input class="pinb" type="tel" maxlength="1" id="d2" oninput="pnx(2)" onkeydown="pbk(event,2)">
+            <input class="pinb" type="tel" maxlength="1" id="d3" oninput="pnx(3)" onkeydown="pbk(event,3)">
+            <input class="pinb" type="tel" maxlength="1" id="d4" oninput="pnx(4)" onkeydown="pbk(event,4)">
+        </div>
+        <div class="perr" id="pinErr">⚠️ Неверный PIN!</div>
+        <div class="fbtn">
+            <button class="btn b-sc" onclick="cls('ovLogin')">Отмена</button>
+            <button class="btn b-pr" onclick="tryPin()">Войти →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ФОРМА ЗАПИСИ (без часов) -->
+<div class="ov" id="ovForm">
+    <div class="sht">
+        <div class="shn"></div>
+        <h2 id="fTitle">➕ Новая запись</h2>
+        <input type="hidden" id="fId">
+
+        <div class="fg">
+            <label class="fgl">📅 Дата</label>
+            <input type="date" class="fgi" id="fDate">
+        </div>
+
+        <div class="fg">
+            <label class="fgl">🔧 Вид работы</label>
+            <select class="fgs" id="fType">
+                <option value="Автоэлектрика">🔌 Автоэлектрика</option>
+                <option value="Электрика">💡 Электрика</option>
+                <option value="Работа на базе">🏢 Работа на базе</option>
+                <option value="Подсобные работы">📦 Подсобные работы</option>
+                <option value="Другое">📋 Другое</option>
+            </select>
+        </div>
+
+        <div class="fg">
+            <label class="fgl">📝 Работа</label>
+            <input type="text" class="fgi" id="fWork" placeholder="MAN 345 замена косы, протяжка кабеля...">
+        </div>
+
+        <div class="fg">
+            <label class="fgl">📋 Описание</label>
+            <textarea class="fgt" id="fDesc" placeholder="Опишите своими словами..."></textarea>
+            <div class="aib">
+                <button class="ai-btn" onclick="aiFix()">✨ Улучшить текст</button>
+                <div class="ai-ld" id="aiLd"><div class="sp"></div>Обрабатываю...</div>
+                <div class="ai-o" id="aiO"></div>
+                <button class="ai-ok" id="aiOk" onclick="aiUse()">✅ Применить</button>
+            </div>
+        </div>
+
+        <div class="fg">
+            <label class="fgl">📊 Статус</label>
+            <select class="fgs" id="fSt">
+                <option value="Выполнено">✅ Выполнено</option>
+                <option value="В процессе">🔄 В процессе</option>
+                <option value="Ожидание запчастей">⏳ Ожидание</option>
+                <option value="Отложено">⏸ Отложено</option>
+            </select>
+        </div>
+
+        <div class="fbtn">
+            <button class="btn b-sc" onclick="cls('ovForm')">Отмена</button>
+            <button class="btn b-pr" onclick="save()">💾 Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ЧАСОВ (красивая) -->
+<div class="ov" id="ovHours">
+    <div class="sht">
+        <div class="shn"></div>
+        <h2>🕐 Часы смены</h2>
+        <div class="hours-modal-body">
+            <div class="hours-modal-date" id="hoursDate">—</div>
+
+            <div class="hours-grid">
+                <button class="hours-chip" onclick="pickHour(8,this)">8</button>
+                <button class="hours-chip" onclick="pickHour(9,this)">9</button>
+                <button class="hours-chip" onclick="pickHour(10,this)">10</button>
+                <button class="hours-chip" onclick="pickHour(11,this)">11</button>
+                <button class="hours-chip" onclick="pickHour(12,this)">12</button>
+            </div>
+            <div class="hours-chip-label">или введите своё значение:</div>
+            <div class="hours-custom">
+                <input type="number" class="hours-custom-input" id="hoursInput" min="1" max="24" placeholder="—">
+                <span class="hours-custom-label">часов</span>
+            </div>
+            <div class="hours-clear" onclick="clearHours()">Очистить часы</div>
+        </div>
+        <input type="hidden" id="hoursDateKey">
+        <div class="fbtn">
+            <button class="btn b-sc" onclick="cls('ovHours')">Отмена</button>
+            <button class="btn b-pr" onclick="saveHours()">💾 Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- PDF ЗАГРУЗКА -->
+<div class="ov" id="ovPdf">
+    <div class="sht">
+        <div class="shn"></div>
+        <h2>📎 Добавить PDF</h2>
+        <p style="color:var(--txt2);font-size:13px;margin-bottom:14px">Загрузите PDF — табель прошлых месяцев</p>
+        <div class="pdf-upload-area" id="dropZone" onclick="document.getElementById('pdfFile').click()">
+            <div class="ico">📄</div>
+            <p>Нажмите или перетащите PDF</p>
+            <small>Максимум 10 МБ</small>
+        </div>
+        <input type="file" id="pdfFile" accept=".pdf" style="display:none" onchange="handlePdf(this)">
+        <div class="fg">
+            <label class="fgl">📝 Название</label>
+            <input type="text" class="fgi" id="pdfName" placeholder="Табель за октябрь...">
+        </div>
+        <div class="frow">
+            <div class="fg">
+                <label class="fgl">📅 Месяц</label>
+                <select class="fgs" id="pdfMonth">
+                    <option value="0">Январь</option><option value="1">Февраль</option>
+                    <option value="2">Март</option><option value="3">Апрель</option>
+                    <option value="4">Май</option><option value="5">Июнь</option>
+                    <option value="6">Июль</option><option value="7">Август</option>
+                    <option value="8">Сентябрь</option><option value="9">Октябрь</option>
+                    <option value="10">Ноябрь</option><option value="11">Декабрь</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fgl">📅 Год</label>
+                <input type="number" class="fgi" id="pdfYear" value="2025" min="2020" max="2030">
+            </div>
+        </div>
+        <div id="pdfPreview" style="display:none;margin-bottom:14px">
+            <div class="pdf-item">
+                <div class="pdf-icon">📄</div>
+                <div class="pdf-info"><div class="pdf-name" id="pdfPrevName">—</div><div class="pdf-size" id="pdfPrevSize">—</div></div>
+                <span style="color:var(--green);font-size:20px">✓</span>
+            </div>
+        </div>
+        <div class="fbtn">
+            <button class="btn b-sc" onclick="cls('ovPdf')">Отмена</button>
+            <button class="btn b-pr" onclick="savePdf()">📎 Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const PIN='1160';
+const OPENAI_KEY='';
+const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+let adm=false, D=[], pdfs=[], now=new Date(), fil='all', pendingPdf=null;
+let dayHours=JSON.parse(localStorage.getItem('tabel_hours')||'{}');
+
+// PWA
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+let deferP;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferP=e;document.getElementById('iBanner').classList.add('show')});
+function installPWA(){if(!deferP)return;deferP.prompt();deferP.userChoice.then(()=>{deferP=null;document.getElementById('iBanner').classList.remove('show')})}
+function dismissPWA(){document.getElementById('iBanner').classList.remove('show')}
+
+// INIT
+function init(){
+    updM();
+    D=JSON.parse(localStorage.getItem('tabel_d4')||'[]');
+    pdfs=JSON.parse(localStorage.getItem('tabel_pdfs4')||'[]');
+    if(!D.length) loadDemo();
+    render();
+    setTimeout(()=>document.getElementById('splash').classList.add('bye'),500);
+    const dz=document.getElementById('dropZone');
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])processPdfFile(e.dataTransfer.files[0])});
+}
+
+function loadDemo(){
+    const y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,'0');
+    D=[
+        {id:'1',date:`${y}-${m}-15`,workType:'Электрика',work:'Автоматические двери (приёмка)',description:'Протяжка кабеля от распределительного щита к электроприводу автоматических дверей.',status:'Выполнено'},
+        {id:'2',date:`${y}-${m}-15`,workType:'Автоэлектрика',work:'MAN 345 — замена косы к датчикам скорости',description:'Замена жгута проводов (косы) к датчикам скорости. Диагностика цепи, прозвонка контактов.',status:'Выполнено'},
+        {id:'3',date:`${y}-${m}-14`,workType:'Подсобные работы',work:'Доставка запчастей, помощь сварщику',description:'Доставка запасных частей со склада. Помощь сварщику в подборе материалов.',status:'Выполнено'},
+        {id:'4',date:`${y}-${m}-13`,workType:'Автоэлектрика',work:'Volvo FH 324 — устранение проблем с АБС',description:'Устранение неисправностей системы АБС. Замена датчика ABS.',status:'Выполнено'},
+        {id:'5',date:`${y}-${m}-12`,workType:'Работа на базе',work:'Щит освещения цех №2',description:'Замена автоматических выключателей в распределительном щите.',status:'Выполнено'},
+        {id:'6',date:`${y}-${m}-11`,workType:'Автоэлектрика',work:'CAT 740B — ремонт проводки',description:'Ремонт электропроводки кузова самосвала.',status:'В процессе'},
+        {id:'7',date:`${y}-${m}-10`,workType:'Другое',work:'Инвентаризация электрооборудования',description:'Учёт электрооборудования и инструмента.',status:'Выполнено'}
+    ];
+    // Демо часы
+    dayHours[`${y}-${m}-15`]=12;
+    dayHours[`${y}-${m}-14`]=11;
+    dayHours[`${y}-${m}-13`]=12;
+    dayHours[`${y}-${m}-12`]=9;
+    dayHours[`${y}-${m}-11`]=10;
+    dayHours[`${y}-${m}-10`]=8;
+    sv(); svH();
+}
+
+function sv(){localStorage.setItem('tabel_d4',JSON.stringify(D))}
+function svP(){localStorage.setItem('tabel_pdfs4',JSON.stringify(pdfs))}
+function svH(){localStorage.setItem('tabel_hours',JSON.stringify(dayHours))}
+
+// МЕСЯЦ
+function navM(d){now.setMonth(now.getMonth()+d);updM();render()}
+function updM(){document.getElementById('mTxt').textContent=`${MN[now.getMonth()]} ${now.getFullYear()}`}
+
+// ФИЛЬТР
+function flt(f){
+    fil=f;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f===f));
+    render();
+}
+
+// ФОРМАТИРОВАНИЕ ДАТЫ
+function fmtDate(dateStr){
+    const dt=new Date(dateStr+'T00:00:00');
+    const wd=dt.toLocaleDateString('ru-RU',{weekday:'short'});
+    const dm=dt.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    return `${wd}, ${dm}`;
+}
+
+// === ЧАСЫ НАПРОТИВ ДАТЫ ===
+function openHoursModal(dateStr){
+    if(!adm) return;
+    document.getElementById('hoursDateKey').value=dateStr;
+    document.getElementById('hoursDate').textContent='📅 '+fmtDate(dateStr);
+
+    const current=dayHours[dateStr]||'';
+    document.getElementById('hoursInput').value=current;
+
+    // Подсветить кнопку
+    document.querySelectorAll('.hours-chip').forEach(c=>{
+        c.classList.toggle('sel', parseInt(c.textContent)===current);
+    });
+
+    opn('ovHours');
+}
+
+function pickHour(h, el){
+    document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('hoursInput').value=h;
+}
+
+function clearHours(){
+    document.getElementById('hoursInput').value='';
+    document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
+}
+
+function saveHours(){
+    const dateStr=document.getElementById('hoursDateKey').value;
+    const val=document.getElementById('hoursInput').value;
+
+    if(val===''){
+        delete dayHours[dateStr];
+    } else {
+        const num=parseInt(val);
+        if(isNaN(num)||num<1||num>24){
+            alert('Введите число от 1 до 24');
+            return;
+        }
+        dayHours[dateStr]=num;
+    }
+    svH();
+    cls('ovHours');
+    render();
+}
+
+// РЕНДЕР
+function render(){
+    const mo=now.getMonth(), yr=now.getFullYear();
+    let items=D.filter(w=>{const d=new Date(w.date);return d.getMonth()===mo&&d.getFullYear()===yr});
+    const monthPdfs=pdfs.filter(p=>p.month===mo&&p.year===yr);
+
+    // Уникальные даты
+    const uniqueDates=[...new Set(items.map(w=>w.date))];
+
+    // СТАТИСТИКА
+    document.getElementById('s1').textContent=uniqueDates.length;
+
+    // Часы — сумма по уникальным датам
+    const totalHours=uniqueDates.reduce((s,d)=>s+(parseInt(dayHours[d])||0),0);
+    document.getElementById('s2').textContent=totalHours;
+
+    document.getElementById('s3').textContent=items.filter(w=>w.workType==='Автоэлектрика').length;
+    document.getElementById('s4').textContent=items.filter(w=>w.workType==='Электрика').length;
+    document.getElementById('s5').textContent=items.filter(w=>!['Автоэлектрика','Электрика'].includes(w.workType)).length;
+
+    // Фильтр
+    const fm={
+        auto:w=>w.workType==='Автоэлектрика',
+        electro:w=>w.workType==='Электрика',
+        base:w=>w.workType==='Работа на базе',
+        help:w=>w.workType==='Подсобные работы',
+        other:w=>w.workType==='Другое'
+    };
+    const showPdf=fil==='all'||fil==='pdf';
+    if(fil!=='all'&&fil!=='pdf'&&fm[fil]) items=items.filter(fm[fil]);
+    if(fil==='pdf') items=[];
+
+    items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+    const box=document.getElementById('list');
+    let html='';
+
+    // PDF
+    if(showPdf&&monthPdfs.length>0){
+        html+=`<div class="pdf-section"><div style="font-size:14px;font-weight:700;margin-bottom:10px">📄 PDF документы (${monthPdfs.length})</div>`;
+        monthPdfs.forEach(p=>{
+            const sz=p.size?(p.size/1024/1024).toFixed(1)+' МБ':'';
+            html+=`<div class="pdf-item"><div class="pdf-icon">📄</div><div class="pdf-info"><div class="pdf-name">${esc(p.name)}</div><div class="pdf-size">${sz}</div></div><div class="pdf-actions"><button class="btn b-gh b-sm" onclick="viewPdf('${p.id}')">👁</button>${adm?`<button class="btn b-gr b-sm" onclick="delPdf('${p.id}')">🗑</button>`:''}</div></div>`;
+        });
+        html+=`</div>`;
+    }
+
+    if(!items.length&&!html){
+        html=`<div class="empty"><div class="empty-i">📋</div><div class="empty-m">Нет записей</div><div class="empty-s">${adm?'Нажмите ＋':''}</div></div>`;
+        box.innerHTML=html;return;
+    }
+
+    let ld='';
+    items.forEach(w=>{
+        // Заголовок даты с часами
+        if(w.date!==ld){
+            const ds=fmtDate(w.date);
+            const dh=dayHours[w.date];
+            const hasHours=dh!==undefined&&dh!==null;
+            const hoursText=hasHours?`🕐 ${dh}ч`:'🕐 —';
+            const emptyCls=hasHours?'':'empty';
+            const clickAttr=adm?`onclick="openHoursModal('${w.date}')" `:'';
+            const clickCls=adm?'clickable':'';
+
+            html+=`<div class="dh">
+                <span class="dl-txt">📅 ${ds}</span>
+                <span class="dl-hours ${emptyCls} ${clickCls}" ${clickAttr}>${hoursText}</span>
+                <div class="dl-line"></div>
+            </div>`;
+            ld=w.date;
+        }
+
+        // Тип
+        const tpMap={'Автоэлектрика':'tp-auto','Электрика':'tp-elec','Работа на базе':'tp-base','Подсобные работы':'tp-help'};
+        const tpCls=tpMap[w.workType]||'tp-oth';
+        const typeIcons={'Автоэлектрика':'🔌','Электрика':'💡','Работа на базе':'🏢','Подсобные работы':'📦','Другое':'📋'};
+        const tpIco=typeIcons[w.workType]||'🔧';
+
+        // Статус
+        const stMap={'Выполнено':'t-st','В процессе':'t-prog','Ожидание запчастей':'t-wait','Отложено':'t-wait'};
+        const stCls=stMap[w.status]||'t-st';
+
+        html+=`<div class="card ${tpCls}">
+            <div class="ctop">
+                <span class="tag t-type">${tpIco} ${w.workType||''}</span>
+                <span class="tag ${stCls}">${w.status||''}</span>
+            </div>
+            <div class="cobj">🔧 ${esc(w.work||'')}</div>
+            ${w.description?`<div class="cdsc">${esc(w.description)}</div>`:''}
+            ${adm?`<div class="cbot">
+                <button class="btn b-gh b-sm" onclick="edit('${w.id}')">✏️ Изменить</button>
+                <button class="btn b-gr b-sm" onclick="del('${w.id}')">🗑 Удалить</button>
+            </div>`:''}
+        </div>`;
+    });
+
+    box.innerHTML=html;
+}
+
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+
+// АВТОРИЗАЦИЯ
+function toggleAuth(){
+    if(adm){adm=false;updA();return}
+    opn('ovLogin');
+    ['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('pinErr').style.display='none';
+    setTimeout(()=>document.getElementById('d1').focus(),300);
+}
+function pnx(n){if(n<4)document.getElementById('d'+(n+1)).focus();if(n===4)tryPin()}
+function pbk(e,n){if(e.key==='Backspace'&&!document.getElementById('d'+n).value&&n>1)document.getElementById('d'+(n-1)).focus()}
+function tryPin(){
+    const v=['d1','d2','d3','d4'].map(x=>document.getElementById(x).value).join('');
+    if(v===PIN){adm=true;cls('ovLogin');updA()}
+    else if(v.length===4){document.getElementById('pinErr').style.display='block';['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');document.getElementById('d1').focus()}
+}
+function updA(){
+    const dot=document.getElementById('sDot'),lbl=document.getElementById('sLbl'),btn=document.getElementById('aBtn'),fab=document.getElementById('fab'),pBtn=document.getElementById('pdfUpBtn');
+    if(adm){dot.classList.add('on');lbl.textContent='Админ';btn.className='btn b-gr';btn.innerHTML='🔓';fab.classList.add('show');pBtn.style.display='flex'}
+    else{dot.classList.remove('on');lbl.textContent='Гость';btn.className='btn b-gh';btn.innerHTML='🔐';fab.classList.remove('show');pBtn.style.display='none'}
+    render();
+}
+
+function opn(id){document.getElementById(id).classList.add('open')}
+function cls(id){document.getElementById(id).classList.remove('open')}
+
+// ФОРМА
+function addNew(){
+    if(!adm)return;
+    document.getElementById('fTitle').textContent='➕ Новая запись';
+    document.getElementById('fId').value='';
+    document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('fType').value='Автоэлектрика';
+    document.getElementById('fWork').value='';
+    document.getElementById('fDesc').value='';
+    document.getElementById('fSt').value='Выполнено';
+    hideAi();opn('ovForm');
+}
+
+function edit(id){
+    if(!adm)return;
+    const w=D.find(x=>x.id+''===id+'');if(!w)return;
+    document.getElementById('fTitle').textContent='✏️ Редактирование';
+    document.getElementById('fId').value=w.id;
+    document.getElementById('fDate').value=w.date;
+    document.getElementById('fType').value=w.workType||'Автоэлектрика';
+    document.getElementById('fWork').value=w.work||'';
+    document.getElementById('fDesc').value=w.description||'';
+    document.getElementById('fSt').value=w.status||'Выполнено';
+    hideAi();opn('ovForm');
+}
+
+function save(){
+    const p={
+        date:document.getElementById('fDate').value,
+        workType:document.getElementById('fType').value,
+        work:document.getElementById('fWork').value.trim(),
+        description:document.getElementById('fDesc').value.trim(),
+        status:document.getElementById('fSt').value
+    };
+    if(!p.date||!p.work){alert('Заполните дату и работу!');return}
+    if(!p.description) p.description=p.work;
+
+    const id=document.getElementById('fId').value;
+    if(id){const i=D.findIndex(x=>x.id+''===id+'');if(i>-1)D[i]={...D[i],...p}}
+    else D.push({id:Date.now()+'', ...p});
+    sv();cls('ovForm');render();
+}
+
+function del(id){if(!adm||!confirm('Удалить?'))return;D=D.filter(x=>x.id+''!==id+'');sv();render()}
+
+// PDF
+function openPdfUpload(){
+    if(!adm)return;
+    document.getElementById('pdfFile').value='';
+    document.getElementById('pdfName').value='';
+    document.getElementById('pdfMonth').value=now.getMonth();
+    document.getElementById('pdfYear').value=now.getFullYear();
+    document.getElementById('pdfPreview').style.display='none';
+    pendingPdf=null;opn('ovPdf');
+}
+function handlePdf(input){if(input.files[0])processPdfFile(input.files[0])}
+function processPdfFile(file){
+    if(!file.name.toLowerCase().endsWith('.pdf')){alert('Только PDF!');return}
+    if(file.size>10*1024*1024){alert('Максимум 10 МБ!');return}
+    const reader=new FileReader();
+    reader.onload=function(e){
+        pendingPdf={data:e.target.result,name:file.name,size:file.size};
+        document.getElementById('pdfPrevName').textContent=file.name;
+        document.getElementById('pdfPrevSize').textContent=(file.size/1024/1024).toFixed(1)+' МБ';
+        document.getElementById('pdfPreview').style.display='block';
+        if(!document.getElementById('pdfName').value) document.getElementById('pdfName').value=file.name.replace('.pdf','');
+    };
+    reader.readAsDataURL(file);
+}
+function savePdf(){
+    if(!pendingPdf){alert('Выберите PDF!');return}
+    const name=document.getElementById('pdfName').value.trim();
+    if(!name){alert('Введите название!');return}
+    pdfs.push({
+        id:Date.now()+'',name:name,
+        month:parseInt(document.getElementById('pdfMonth').value),
+        year:parseInt(document.getElementById('pdfYear').value),
+        data:pendingPdf.data,size:pendingPdf.size
+    });
+    svP();cls('ovPdf');render();
+}
+function viewPdf(id){
+    const p=pdfs.find(x=>x.id===id);if(!p)return;
+    document.getElementById('pdfViewTitle').textContent=p.name;
+    document.getElementById('pdfFrame').src=p.data;
+    document.getElementById('pdfViewer').classList.add('open');
+    document.getElementById('pdfViewer').dataset.id=id;
+}
+function closePdfView(){document.getElementById('pdfViewer').classList.remove('open');document.getElementById('pdfFrame').src=''}
+function downloadPdf(){
+    const id=document.getElementById('pdfViewer').dataset.id;
+    const p=pdfs.find(x=>x.id===id);if(!p)return;
+    const a=document.createElement('a');a.href=p.data;a.download=p.name+'.pdf';a.click();
+}
+function delPdf(id){if(!adm||!confirm('Удалить PDF?'))return;pdfs=pdfs.filter(x=>x.id!==id);svP();render()}
+
+// AI
+function hideAi(){document.getElementById('aiO').style.display='none';document.getElementById('aiOk').style.display='none';document.getElementById('aiLd').style.display='none'}
+
+async function aiFix(){
+    const t=document.getElementById('fDesc').value.trim();
+    if(!t){alert('Сначала опишите работу!');return}
+    document.getElementById('aiLd').style.display='flex';
+    document.getElementById('aiO').style.display='none';
+    document.getElementById('aiOk').style.display='none';
+    let r;
+    if(OPENAI_KEY){
+        try{const resp=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},body:JSON.stringify({model:'gpt-3.5-turbo',messages:[{role:'system',content:'Ты помощник электрика и автоэлектрика. Перепиши описание работы грамотным техническим языком. Кратко, профессионально. По-русски.'},{role:'user',content:t}],max_tokens:300})});const j=await resp.json();r=j.choices[0].message.content.trim()}catch(e){r=await localAi(t)}
+    }else{r=await localAi(t)}
+    document.getElementById('aiLd').style.display='none';
+    const o=document.getElementById('aiO');o.style.display='block';o.textContent=r;o.dataset.t=r;
+    document.getElementById('aiOk').style.display='block';
+}
+
+function localAi(text){
+    return new Promise(res=>{setTimeout(()=>{
+        let t=text;
+        const d={
+            'протяжка кабеля':'прокладка кабельной линии','от шита':'от распределительного щита',
+            'от щита':'от распределительного щита','к автоматическим дверям':'к электроприводу автоматических дверей',
+            'приёмка':'зона приёмки','приемка':'зона приёмки','замена косы':'замена жгута проводов (косы)',
+            'коса':'жгут проводов','к датчикам скорость':'к датчикам скорости','к дачикам':'к датчикам',
+            'дачик':'датчик','доставка запчастей':'доставка запасных частей','помошь сваршику':'помощь сварщику',
+            'помощь сварщику':'оказание помощи сварщику','поиск материалов':'подбор материалов',
+            'в поисков материалов':'в подборе материалов','для выполнения задачи':'для выполнения производственного задания',
+            'абс':'АБС (антиблокировочная система)','ABS':'АБС','устанение':'устранение',
+            'устранение проблем':'устранение неисправностей','не работает':'неисправен',
+            'поменял':'произведена замена','заменил':'выполнена замена','поставил':'установлен',
+            'починил':'устранена неисправность','глючит':'работает некорректно',
+            'проверил':'проведена диагностика','проводка':'электропроводка','провода':'электропроводка',
+            'акум':'АКБ','аккум':'АКБ','аккумулятор':'АКБ (аккумуляторная батарея)',
+            'лампочка':'лампа','поворотник':'указатель поворота','движок':'двигатель',
+            'мозги':'ЭБУ','подключил':'выполнено подключение','снял':'демонтирован',
+            'разобрал':'произведён демонтаж','собрал':'произведён монтаж',
+            'кз':'короткое замыкание','коротит':'обнаружено короткое замыкание',
+            'прозвонил':'выполнена прозвонка цепей','окислились':'обнаружено окисление контактов',
+            'приборка':'панель приборов','щиток':'электрощит','автомат':'автоматический выключатель',
+            'фара':'фара головного освещения','габариты':'габаритные огни',
+            'почистил':'произведена очистка','сделал':'выполнено',
+            'протянул':'проложен','выбивает автомат':'срабатывает защита автоматического выключателя',
+            'на базе':'на производственной базе'
+        };
+        t=t.charAt(0).toUpperCase()+t.slice(1);
+        const sorted=Object.entries(d).sort((a,b)=>b[0].length-a[0].length);
+        for(const[k,v]of sorted){const rx=new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');t=t.replace(rx,v)}
+        if(!/[.!]$/.test(t.trim()))t=t.trim()+'.';
+        res(t);
+    },800)});
+}
+
+function aiUse(){document.getElementById('fDesc').value=document.getElementById('aiO').dataset.t;hideAi()}
+
+// ЭКСПОРТ
+function toCSV(){
+    const mo=now.getMonth(),yr=now.getFullYear();
+    const items=D.filter(w=>{const d=new Date(w.date);return d.getMonth()===mo&&d.getFullYear()===yr}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    let csv='Дата,Часы смены,Вид работы,Работа,Описание,Статус\n';
+    items.forEach(w=>{
+        csv+=`"${w.date}","${dayHours[w.date]||''}","${w.workType}","${w.work}","${w.description}","${w.status}"\n`;
+    });
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Табель_${MN[mo]}_${yr}.csv`;a.click();
+}
+
+function toPrint(){
+    const mo=now.getMonth(),yr=now.getFullYear();
+    const items=D.filter(w=>{const d=new Date(w.date);return d.getMonth()===mo&&d.getFullYear()===yr}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const uniqueDates=[...new Set(items.map(w=>w.date))];
+    const totalShifts=uniqueDates.length;
+    const totalH=uniqueDates.reduce((s,d)=>s+(parseInt(dayHours[d])||0),0);
+
+    let html=`<html><head><meta charset="utf-8"><title>Табель ${MN[mo]} ${yr}</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;font-size:11px;color:#333}
+    h1{font-size:18px;margin-bottom:4px}h2{font-size:13px;color:#666;margin-bottom:15px;font-weight:normal}
+    table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px 7px;text-align:left;font-size:10px}
+    th{background:#e8e8e8;font-weight:bold}tr:nth-child(even){background:#f9f9f9}
+    .sum{margin-top:15px;font-size:12px;padding:10px;background:#f0f0f0;border-radius:8px}
+    .footer{margin-top:20px;font-size:10px;color:#999}</style></head><body>
+    <h1>⚡ Табель работ</h1><h2>${MN[mo]} ${yr}</h2>
+    <div class="sum"><strong>Итого:</strong> Смен: ${totalShifts} | Часов: ${totalH} | Записей: ${items.length}</div><br>
+    <table><tr><th>№</th><th>Дата</th><th>Часы</th><th>Вид</th><th>Работа</th><th>Описание</th><th>Статус</th></tr>`;
+    items.forEach((w,i)=>{const d=new Date(w.date+'T00:00:00').toLocaleDateString('ru-RU');
+    html+=`<tr><td>${i+1}</td><td>${d}</td><td>${dayHours[w.date]||'—'}</td><td>${w.workType||''}</td><td>${w.work||''}</td><td>${w.description||''}</td><td>${w.status||''}</td></tr>`});
+    html+=`</table><div class="footer">Сформировано: ${new Date().toLocaleString('ru-RU')}</div></body></html>`;
+    const win=window.open('','_blank');win.document.write(html);win.document.close();setTimeout(()=>win.print(),600);
+}
+
+init();
+</script>
+</body>
+</html>
