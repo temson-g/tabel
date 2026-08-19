@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tabel-v12';
+const CACHE_NAME = 'tabel-v14';
 const ASSETS = [
   '/tabel/',
   '/tabel/index.html',
