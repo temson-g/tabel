@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Табель работ</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/tabel/manifest.json">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Табель">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
 <style>
 :root{
 --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
@@ -21,7 +20,7 @@
 --r:14px;--sab:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
 .hdr{background:linear-gradient(180deg,#1e3a5f,var(--bg));padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(51,65,85,.5)}
 .hdr-l{display:flex;align-items:center;gap:10px}
@@ -39,7 +38,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .b-gr{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 .b-pr{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 4px 15px rgba(59,130,246,.3)}
 .b-sc{background:var(--bg3);color:var(--txt2)}
-.b-gn{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.25)}
 .b-sm{padding:5px 10px;font-size:12px;border-radius:8px}
 
 .mnav{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px;background:var(--bg2);border-bottom:1px solid var(--brd)}
@@ -62,11 +60,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .tbar{display:flex;gap:8px;padding:8px 12px;justify-content:flex-end;flex-wrap:wrap}
 .tb{padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:var(--bg2);color:var(--txt3);display:flex;align-items:center;gap:4px;font-family:inherit}
-.tb:active{opacity:.7}
 .tb-pdf{background:rgba(139,92,246,.12);color:var(--purple);border-color:rgba(139,92,246,.25)}
 .tb-day{background:rgba(6,182,212,.12);color:var(--cyan);border-color:rgba(6,182,212,.25)}
 
 .list{padding:8px 12px;padding-bottom:calc(90px + var(--sab))}
+
 .dh{display:flex;align-items:center;gap:10px;margin:14px 0 8px}
 .dl-txt{font-size:13px;font-weight:700;color:var(--blue);white-space:nowrap}
 .dl-hours{background:rgba(6,182,212,.12);color:#22d3ee;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;border:1px solid rgba(6,182,212,.2);transition:.15s}
@@ -97,11 +95,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .pdf-section{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .pdf-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;border:1px solid var(--brd)}
-.pdf-icon{font-size:28px}
+.pdf-icon{font-size:28px;flex-shrink:0}
 .pdf-info{flex:1;min-width:0}
 .pdf-name{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pdf-size{font-size:11px;color:var(--txt3);margin-top:2px}
-.pdf-actions{display:flex;gap:6px}
+.pdf-actions{display:flex;gap:6px;flex-shrink:0}
 
 .fab{position:fixed;bottom:calc(20px + var(--sab));right:16px;width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;font-size:30px;cursor:pointer;box-shadow:0 6px 25px rgba(59,130,246,.45);z-index:50;display:none;align-items:center;justify-content:center}
 .fab:active{transform:scale(.88)}
@@ -109,7 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:200;justify-content:center;align-items:flex-end}
 .ov.open{display:flex}
-.sht{background:var(--bg2);border-radius:24px 24px 0 0;padding:20px 16px;padding-bottom:calc(20px + var(--sab));width:100%;max-width:520px;max-height:93vh;max-height:93dvh;overflow-y:auto;animation:shu .3s ease}
+.sht{background:var(--bg2);border-radius:24px 24px 0 0;padding:20px 16px;padding-bottom:calc(20px + var(--sab));width:100%;max-width:520px;max-height:93vh;overflow-y:auto;animation:shu .3s ease}
 @keyframes shu{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .shn{width:36px;height:4px;background:var(--bg3);border-radius:4px;margin:0 auto 16px}
 .sht h2{font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
@@ -136,7 +134,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .pinb:focus{outline:none;border-color:var(--blue)}
 .perr{color:var(--red);text-align:center;font-size:13px;display:none;margin-top:8px;font-weight:600}
 
-/* ЧАСЫ */
 .hours-date{font-size:16px;font-weight:700;color:var(--blue);margin-bottom:14px;text-align:center}
 .hours-grid{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
 .hours-chip{width:54px;height:54px;border-radius:14px;border:2px solid var(--brd);background:var(--bg);color:var(--txt);font-size:19px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:.15s}
@@ -150,9 +147,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .hours-custom input:focus{outline:none;border-color:var(--cyan)}
 .hours-clear{margin-top:12px;font-size:12px;color:var(--txt3);cursor:pointer;text-decoration:underline;text-align:center}
 
-/* PDF ИМПОРТ */
 .upl{border:2px dashed var(--brd);border-radius:16px;padding:26px 16px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:14px}
-.upl.drag{border-color:var(--purple);background:rgba(139,92,246,.05)}
+.upl:hover,.upl.drag{border-color:var(--purple);background:rgba(139,92,246,.05)}
 .upl .ico{font-size:38px;margin-bottom:8px}
 .upl p{font-size:13px;color:var(--txt2)}
 .upl small{font-size:11px;color:var(--txt3)}
@@ -174,9 +170,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .prow-txt{width:100%;padding:7px 9px;border-radius:8px;border:1px solid var(--brd);background:var(--bg2);color:var(--txt);font-size:13px;font-family:inherit;line-height:1.4;min-height:52px;resize:vertical}
 .prev-actions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .mini{padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;font-family:inherit}
-
 .chkline{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:13px;color:var(--txt2)}
 .chkline input{width:18px;height:18px;accent-color:var(--purple)}
+
+/* PDF VIEWER */
+.pdfv{position:fixed;inset:0;background:var(--bg);z-index:250;display:none;flex-direction:column}
+.pdfv.open{display:flex}
+.pdfv-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--brd)}
+.pdfv-h h3{font-size:15px;flex:1;margin:0 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdfv iframe{flex:1;width:100%;border:none;background:#fff}
+.pdfv-alt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:16px}
+.pdfv-alt .ico{font-size:64px}
+.pdfv-alt p{font-size:14px;color:var(--txt2);line-height:1.6}
+
+/* Кнопка обновления */
+#updateBar{display:none;background:#10b981;color:#fff;padding:12px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;position:sticky;top:0;z-index:101}
 
 .empty{text-align:center;padding:50px 20px;color:var(--txt3)}
 .empty-i{font-size:56px;margin-bottom:12px}
@@ -193,18 +201,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ibanner.show{display:flex}
 .ibanner-t{flex:1;font-size:13px;color:var(--txt2);line-height:1.4}
 
-.pdfv{position:fixed;inset:0;background:var(--bg);z-index:250;display:none;flex-direction:column}
-.pdfv.open{display:flex}
-.pdfv-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--brd)}
-.pdfv-h h3{font-size:15px;flex:1;margin:0 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pdfv iframe{flex:1;width:100%;border:none}
-
 @media(min-width:768px){.sht{border-radius:24px;margin:auto}.ov{align-items:center;padding:20px}}
 </style>
 </head>
 <body>
 
-<div class="splash" id="splash"><div class="splash-i">⚡</div><div class="splash-t">Загрузка табеля...</div></div>
+<!-- Бар обновления -->
+<div id="updateBar" onclick="updateAppNow()">
+  🔄 Доступно обновление! Нажмите сюда для обновления.
+</div>
+
+<div class="splash" id="splash"><div class="splash-i">⚡</div><div class="splash-t">Загрузка...</div></div>
 
 <div class="ibanner" id="iBanner">
 <span style="font-size:32px">⚡</span>
@@ -250,6 +257,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="tbar">
 <button class="tb" onclick="toCSV()">📊 Excel</button>
 <button class="tb" onclick="toPrint()">🖨 Печать</button>
+<button class="tb tb-day" onclick="downloadIcons()" id="icBtn" style="display:none">⚙️ Иконки PWA</button>
 <button class="tb tb-day" onclick="openDayModal()" id="dayBtn" style="display:none">🕐 День</button>
 <button class="tb tb-pdf" onclick="openImport()" id="pdfBtn" style="display:none">📥 Импорт PDF</button>
 </div>
@@ -257,13 +265,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="list" id="list"></div>
 <button class="fab" id="fab" onclick="addNew()">＋</button>
 
+<!-- PDF VIEWER -->
 <div class="pdfv" id="pdfv">
 <div class="pdfv-h">
-<button class="btn b-gr b-sm" onclick="closePdfView()">✕</button>
+<button class="btn b-gr b-sm" onclick="closePdfView()">✕ Закрыть</button>
 <h3 id="pdfvT">Документ</h3>
-<button class="btn b-gh b-sm" onclick="downloadPdf()">⬇</button>
+<button class="btn b-gh b-sm" onclick="downloadPdf()">⬇ Скачать</button>
 </div>
-<iframe id="pdfFrame"></iframe>
+<iframe id="pdfFrame" style="display:none"></iframe>
+<div class="pdfv-alt" id="pdfAlt" style="display:none">
+<div class="ico">📄</div>
+<p id="pdfAltTxt">Открыть PDF</p>
+<button class="btn b-pr" onclick="downloadPdf()">⬇ Скачать файл</button>
+</div>
 </div>
 
 <!-- ЛОГИН -->
@@ -337,50 +351,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- ИМПОРТ PDF -->
 <div class="ov" id="ovImp"><div class="sht">
 <div class="shn"></div><h2>📥 Импорт из PDF</h2>
-<p style="color:var(--txt2);font-size:13px;margin-bottom:12px">Загрузите старый табель — приложение само распознает даты, часы и работы</p>
-
+<p style="color:var(--txt2);font-size:13px;margin-bottom:12px">Загрузите старый табель — приложение само распознает работы, часы, даты</p>
 <div class="upl" id="dz" onclick="document.getElementById('pf').click()">
-<div class="ico">📄</div>
-<p>Нажмите или перетащите PDF</p>
-<small>Максимум 10 МБ</small>
+<div class="ico">📄</div><p>Нажмите или перетащите PDF</p><small>До 50 МБ · Работает на телефоне</small>
 </div>
-<input type="file" id="pf" accept=".pdf" style="display:none" onchange="onFile(this)">
-
+<input type="file" id="pf" accept=".pdf,application/pdf" style="display:none" onchange="onFile(this)">
 <div class="scan-box" id="scanBox"><div class="sp2"></div><p id="scanTxt">Читаю PDF...</p></div>
-
 <div id="prevWrap" style="display:none">
-<div class="prev-head">
-<h3>🔍 Найдено записей</h3>
-<span class="prev-count" id="prevCnt">0</span>
-</div>
+<div class="prev-head"><h3>🔍 Найдено записей</h3><span class="prev-count" id="prevCnt">0</span></div>
 <div class="prev-actions">
-<button class="mini" onclick="selAll(true)">✅ Выбрать все</button>
-<button class="mini" onclick="selAll(false)">☐ Снять все</button>
-<button class="mini" onclick="aiAllRows()">✨ Улучшить все тексты</button>
+<button class="mini" onclick="selAll(true)">✅ Все</button>
+<button class="mini" onclick="selAll(false)">☐ Снять</button>
+<button class="mini" onclick="aiAllRows()">✨ Улучшить</button>
 </div>
 <div id="prevList"></div>
 </div>
-
-<div class="chkline">
-<input type="checkbox" id="keepFile" checked>
-<label for="keepFile">Также сохранить сам PDF-файл</label>
-</div>
-
+<div class="chkline"><input type="checkbox" id="keepFile" checked><label for="keepFile">Сохранить PDF как файл</label></div>
 <div id="fileInfo" style="display:none;margin-bottom:10px">
-<div class="pdf-item">
-<div class="pdf-icon">📄</div>
-<div class="pdf-info"><div class="pdf-name" id="fiName">—</div><div class="pdf-size" id="fiSize">—</div></div>
-<span style="color:var(--green);font-size:20px">✓</span>
+<div class="pdf-item"><div class="pdf-icon">📄</div><div class="pdf-info"><div class="pdf-name" id="fiName">—</div><div class="pdf-size" id="fiSize">—</div></div><span style="color:var(--green);font-size:20px">✓</span></div>
 </div>
-</div>
-
-<div class="fbtn">
-<button class="btn b-sc" onclick="cls('ovImp')">Отмена</button>
-<button class="btn b-pr" onclick="doImport()" id="impBtn">📥 Импортировать</button>
-</div>
+<div class="fbtn"><button class="btn b-sc" onclick="cls('ovImp')">Отмена</button><button class="btn b-pr" onclick="doImport()">📥 Импортировать</button></div>
 </div></div>
 
 <script>
+// ===== КОНФИГ =====
 const PIN='1160';
 const OPENAI_KEY='';
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -388,159 +382,187 @@ const MG=['январ','феврал','март','апрел','ма','июн','�
 
 if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-let adm=false,D=[],pdfs=[],now=new Date(),fil='all';
-let dayH=JSON.parse(localStorage.getItem('t_hours5')||'{}');
-let parsed=[],pendFile=null;
+// ===== СОСТОЯНИЕ =====
+let adm=false, D=[], now=new Date(), fil='all';
+let dayH=JSON.parse(localStorage.getItem('t_hours6')||'{}');
+let parsed=[], pendFile=null;
 
-// PWA
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+// ===== IndexedDB для PDF =====
+let db=null;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('TabelDB',2);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('pdfs'))
+        d.createObjectStore('pdfs',{keyPath:'id'});
+      if(!d.objectStoreNames.contains('works'))
+        d.createObjectStore('works',{keyPath:'id'});
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db)};
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+function dbGet(store){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readonly');
+    const req=tx.objectStore(store).getAll();
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+function dbPut(store,obj){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite');
+    const req=tx.objectStore(store).put(obj);
+    req.onsuccess=()=>res();
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+function dbDel(store,id){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite');
+    const req=tx.objectStore(store).delete(id);
+    req.onsuccess=()=>res();
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+// ===== PWA =====
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/tabel/sw.js', {scope: '/tabel/'}).catch(()=>{});
+
+  // Принудительное обновление при выходе новой версии
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    document.getElementById('updateBar').style.display = 'block';
+  });
+}
+
+function updateAppNow() {
+  location.reload(true);
+}
+
 let dfp;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dfp=e;document.getElementById('iBanner').classList.add('show')});
 function installPWA(){if(!dfp)return;dfp.prompt();dfp.userChoice.then(()=>{dfp=null;document.getElementById('iBanner').classList.remove('show')})}
 function dismissPWA(){document.getElementById('iBanner').classList.remove('show')}
 
-function init(){
+// ===== INIT =====
+async function init(){
+  try{
+    await openDB();
+    D=await dbGet('works');
+    if(!D.length){
+      const ls=JSON.parse(localStorage.getItem('t_d5')||'[]');
+      if(ls.length){D=ls;for(const w of D)await dbPut('works',w);}
+    }
+  }catch(e){
+    D=JSON.parse(localStorage.getItem('t_d5')||'[]');
+  }
+  if(!D.length) await demo();
   updM();
-  D=JSON.parse(localStorage.getItem('t_d5')||'[]');
-  pdfs=JSON.parse(localStorage.getItem('t_pdf5')||'[]');
-  if(!D.length)demo();
   render();
-  setTimeout(()=>document.getElementById('splash').classList.add('bye'),450);
+  setTimeout(()=>document.getElementById('splash').classList.add('bye'),400);
+
   const dz=document.getElementById('dz');
   dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
   dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
   dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
 }
 
-function demo(){
+async function demo(){
   const y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
   D=[
-  {id:'1',date:`${y}-${m}-15`,workType:'Электрика',work:'Автоматические двери (приёмка)',description:'Протяжка кабеля от распределительного щита к электроприводу автоматических дверей.',status:'Выполнено'},
-  {id:'2',date:`${y}-${m}-15`,workType:'Автоэлектрика',work:'MAN 345 — замена косы к датчикам скорости',description:'Замена жгута проводов (косы) к датчикам скорости. Прозвонка контактов.',status:'Выполнено'},
-  {id:'3',date:`${y}-${m}-14`,workType:'Подсобные работы',work:'Доставка запчастей, помощь сварщику',description:'Доставка запасных частей со склада. Помощь сварщику в подборе материалов.',status:'Выполнено'},
-  {id:'4',date:`${y}-${m}-13`,workType:'Автоэлектрика',work:'Volvo FH 324 — устранение проблем с АБС',description:'Устранение неисправностей системы АБС. Замена датчика ABS.',status:'Выполнено'},
-  {id:'5',date:`${y}-${m}-11`,workType:'Работа на базе',work:'Щит освещения цех №2',description:'Замена автоматических выключателей в распределительном щите.',status:'Выполнено'}
+    {id:'d1',date:`${y}-${m}-15`,workType:'Электрика',work:'Автоматические двери (приёмка)',description:'Протяжка кабеля от распределительного щита к электроприводу автоматических дверей.',status:'Выполнено'},
+    {id:'d2',date:`${y}-${m}-15`,workType:'Автоэлектрика',work:'MAN 345 — замена косы к датчикам скорости',description:'Замена жгута проводов (косы) к датчикам скорости. Прозвонка контактов.',status:'Выполнено'},
+    {id:'d3',date:`${y}-${m}-14`,workType:'Подсобные работы',work:'Доставка запчастей, помощь сварщику',description:'Доставка запасных частей со склада. Помощь сварщику в подборе материалов.',status:'Выполнено'},
+    {id:'d4',date:`${y}-${m}-13`,workType:'Автоэлектрика',work:'Volvo FH 324 — устранение проблем с АБС',description:'Устранение неисправностей системы АБС. Замена датчика ABS.',status:'Выполнено'},
+    {id:'d5',date:`${y}-${m}-11`,workType:'Работа на базе',work:'Щит освещения цех №2',description:'Замена автоматических выключателей.',status:'Выполнено'}
   ];
   dayH[`${y}-${m}-15`]=12;dayH[`${y}-${m}-14`]=11;dayH[`${y}-${m}-13`]=12;
   dayH[`${y}-${m}-12`]='В';dayH[`${y}-${m}-11`]=9;
-  sv();svH();
+  try{for(const w of D)await dbPut('works',w);}catch(e){}
+  svH();
 }
-function sv(){localStorage.setItem('t_d5',JSON.stringify(D))}
-function svP(){localStorage.setItem('t_pdf5',JSON.stringify(pdfs))}
-function svH(){localStorage.setItem('t_hours5',JSON.stringify(dayH))}
 
+async function sv(){
+  try{for(const w of D)await dbPut('works',w);}catch(e){}
+  localStorage.setItem('t_d5',JSON.stringify(D));
+}
+function svH(){localStorage.setItem('t_hours6',JSON.stringify(dayH))}
+
+// ===== PDF через IndexedDB =====
+async function getPdfs(){try{return await dbGet('pdfs')}catch(e){return JSON.parse(localStorage.getItem('t_pdf5')||'[]')}}
+async function addPdf(p){try{await dbPut('pdfs',p)}catch(e){const a=JSON.parse(localStorage.getItem('t_pdf5')||'[]');a.push(p);localStorage.setItem('t_pdf5',JSON.stringify(a))}}
+async function removePdf(id){try{await dbDel('pdfs',id)}catch(e){let a=JSON.parse(localStorage.getItem('t_pdf5')||'[]');a=a.filter(x=>x.id!==id);localStorage.setItem('t_pdf5',JSON.stringify(a))}}
+
+// ===== НАВИГАЦИЯ =====
 function navM(d){now.setMonth(now.getMonth()+d);updM();render()}
 function updM(){document.getElementById('mTxt').textContent=`${MN[now.getMonth()]} ${now.getFullYear()}`}
 function flt(f){fil=f;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f===f));render()}
-
-function fmtD(s){
-  const d=new Date(s+'T00:00:00');
-  return d.toLocaleDateString('ru-RU',{weekday:'short'})+', '+d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
-}
+function fmtD(s){const d=new Date(s+'T00:00:00');return d.toLocaleDateString('ru-RU',{weekday:'short'})+', '+d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
 function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
 
-/* ===== ЧАСЫ / ВЫХОДНОЙ ===== */
-function openHours(dt){
-  if(!adm)return;
-  document.getElementById('hDateWrap').style.display='none';
-  document.getElementById('hKey').value=dt;
-  document.getElementById('hDateLabel').textContent='📅 '+fmtD(dt);
-  fillHours(dt);
-  opn('ovHours');
-}
-function openDayModal(){
-  if(!adm)return;
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('hDateWrap').style.display='block';
-  document.getElementById('hDateInput').value=today;
-  document.getElementById('hKey').value=today;
-  document.getElementById('hDateLabel').textContent='📅 '+fmtD(today);
-  fillHours(today);
-  opn('ovHours');
-}
-function onHDateChange(){
-  const v=document.getElementById('hDateInput').value;
-  if(!v)return;
-  document.getElementById('hKey').value=v;
-  document.getElementById('hDateLabel').textContent='📅 '+fmtD(v);
-  fillHours(v);
-}
-function fillHours(dt){
+// ===== ЧАСЫ =====
+function openHours(dt){if(!adm)return;document.getElementById('hDateWrap').style.display='none';document.getElementById('hKey').value=dt;document.getElementById('hDateLabel').textContent='📅 '+fmtD(dt);fillH(dt);opn('ovHours')}
+function openDayModal(){if(!adm)return;const t=new Date().toISOString().split('T')[0];document.getElementById('hDateWrap').style.display='block';document.getElementById('hDateInput').value=t;document.getElementById('hKey').value=t;document.getElementById('hDateLabel').textContent='📅 '+fmtD(t);fillH(t);opn('ovHours')}
+function onHDateChange(){const v=document.getElementById('hDateInput').value;if(!v)return;document.getElementById('hKey').value=v;document.getElementById('hDateLabel').textContent='📅 '+fmtD(v);fillH(v)}
+function fillH(dt){
   const cur=dayH[dt];
   document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
   document.getElementById('offBtn').classList.remove('sel');
-  if(cur==='В'){
-    document.getElementById('hInput').value='';
-    document.getElementById('offBtn').classList.add('sel');
-  }else{
-    document.getElementById('hInput').value=cur||'';
-    document.querySelectorAll('.hours-chip').forEach(c=>{if(parseInt(c.textContent)===cur)c.classList.add('sel')});
-  }
+  if(cur==='В'){document.getElementById('hInput').value='';document.getElementById('offBtn').classList.add('sel')}
+  else{document.getElementById('hInput').value=cur||'';document.querySelectorAll('.hours-chip').forEach(c=>{if(+c.textContent===cur)c.classList.add('sel')})}
 }
-function pickH(h,el){
-  document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('offBtn').classList.remove('sel');
-  el.classList.add('sel');
-  document.getElementById('hInput').value=h;
-}
-function pickOff(){
-  document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('hInput').value='';
-  document.getElementById('offBtn').classList.add('sel');
-}
-function clearH(){
-  document.getElementById('hInput').value='';
-  document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('offBtn').classList.remove('sel');
-}
+function pickH(h,el){document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('offBtn').classList.remove('sel');el.classList.add('sel');document.getElementById('hInput').value=h}
+function pickOff(){document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('hInput').value='';document.getElementById('offBtn').classList.add('sel')}
+function clearH(){document.getElementById('hInput').value='';document.querySelectorAll('.hours-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('offBtn').classList.remove('sel')}
 function saveH(){
-  const dt=document.getElementById('hKey').value;
-  if(!dt){alert('Выберите дату');return}
+  const dt=document.getElementById('hKey').value;if(!dt){alert('Выберите дату');return}
   const isOff=document.getElementById('offBtn').classList.contains('sel');
   const v=document.getElementById('hInput').value;
-  if(isOff) dayH[dt]='В';
-  else if(v===''){delete dayH[dt]}
-  else{
-    const n=parseInt(v);
-    if(isNaN(n)||n<1||n>24){alert('Введите от 1 до 24');return}
-    dayH[dt]=n;
-  }
+  if(isOff)dayH[dt]='В';
+  else if(v==='')delete dayH[dt];
+  else{const n=parseInt(v);if(isNaN(n)||n<1||n>24){alert('Введите от 1 до 24');return}dayH[dt]=n}
   svH();cls('ovHours');render();
 }
 
-/* ===== РЕНДЕР ===== */
-function render(){
+// ===== РЕНДЕР =====
+async function render(){
   const mo=now.getMonth(),yr=now.getFullYear();
   const inM=s=>{const d=new Date(s+'T00:00:00');return d.getMonth()===mo&&d.getFullYear()===yr};
-
   let works=D.filter(w=>inM(w.date));
-  const mPdfs=pdfs.filter(p=>p.month===mo&&p.year===yr);
+  const allPdfs=await getPdfs();
+  const mPdfs=allPdfs.filter(p=>p.month===mo&&p.year===yr);
   const hDates=Object.keys(dayH).filter(inM);
-
   const workDates=hDates.filter(d=>dayH[d]!=='В');
-  const offDates=hDates.filter(d=>dayH[d]==='В');
+  const od=hDates.filter(d=>dayH[d]==='В');
   const shiftDates=[...new Set([...works.map(w=>w.date),...workDates])];
-
   document.getElementById('s1').textContent=shiftDates.length;
   document.getElementById('s2').textContent=workDates.reduce((s,d)=>s+(parseInt(dayH[d])||0),0);
-  document.getElementById('s3').textContent=offDates.length;
+  document.getElementById('s3').textContent=od.length;
   document.getElementById('s4').textContent=works.filter(w=>w.workType==='Автоэлектрика').length;
   document.getElementById('s5').textContent=works.filter(w=>w.workType==='Электрика').length;
   document.getElementById('s6').textContent=works.filter(w=>!['Автоэлектрика','Электрика'].includes(w.workType)).length;
 
   const fm={auto:'Автоэлектрика',electro:'Электрика',base:'Работа на базе',help:'Подсобные работы',other:'Другое'};
-  if(fm[fil]) works=works.filter(w=>w.workType===fm[fil]);
-  if(fil==='pdf'||fil==='off') works=[];
+  let filtWorks=[...works];
+  if(fm[fil])filtWorks=works.filter(w=>w.workType===fm[fil]);
+  if(fil==='pdf'||fil==='off')filtWorks=[];
 
-  let allDates=[...new Set([...works.map(w=>w.date),...hDates])];
-  if(fil==='off') allDates=offDates;
-  if(fil!=='all'&&fil!=='off'&&fil!=='pdf') allDates=[...new Set(works.map(w=>w.date))];
-  if(fil==='pdf') allDates=[];
+  let allDates=[...new Set([...filtWorks.map(w=>w.date),...hDates])];
+  if(fil==='off')allDates=od;
+  if(fil==='pdf')allDates=[];
+  if(fm[fil])allDates=[...new Set(filtWorks.map(w=>w.date))];
   allDates.sort((a,b)=>new Date(b)-new Date(a));
 
   let h='';
   if((fil==='all'||fil==='pdf')&&mPdfs.length){
-    h+=`<div class="pdf-section"><div style="font-size:14px;font-weight:700;margin-bottom:10px">📄 PDF документы (${mPdfs.length})</div>`;
+    h+=`<div class="pdf-section"><div style="font-size:14px;font-weight:700;margin-bottom:10px">📄 PDF файлы (${mPdfs.length})</div>`;
     mPdfs.forEach(p=>{
       const sz=p.size?(p.size/1048576).toFixed(1)+' МБ':'';
       h+=`<div class="pdf-item"><div class="pdf-icon">📄</div><div class="pdf-info"><div class="pdf-name">${esc(p.name)}</div><div class="pdf-size">${sz}</div></div><div class="pdf-actions"><button class="btn b-gh b-sm" onclick="viewPdf('${p.id}')">👁</button>${adm?`<button class="btn b-gr b-sm" onclick="delPdf('${p.id}')">🗑</button>`:''}</div></div>`;
@@ -560,120 +582,68 @@ function render(){
     const cl=isOff?'off':(v?'':'empty');
     const clk=adm?`onclick="openHours('${dt}')"`:'';
     h+=`<div class="dh"><span class="dl-txt">📅 ${fmtD(dt)}</span><span class="dl-hours ${cl} ${adm?'clickable':''}" ${clk}>${badge}</span><div class="dl-line"></div></div>`;
-
-    const dayWorks=works.filter(w=>w.date===dt);
-    if(!dayWorks.length&&isOff){h+=`<div class="dayoff-card">🏖 Выходной день</div>`;return}
-
-    dayWorks.forEach(w=>{
+    const dayW=filtWorks.filter(w=>w.date===dt);
+    if(!dayW.length&&isOff){h+=`<div class="dayoff-card">🏖 Выходной день</div>`;return}
+    dayW.forEach(w=>{
       const tc={'Автоэлектрика':'tp-auto','Электрика':'tp-elec','Работа на базе':'tp-base','Подсобные работы':'tp-help'}[w.workType]||'tp-oth';
       const ti={'Автоэлектрика':'🔌','Электрика':'💡','Работа на базе':'🏢','Подсобные работы':'📦','Другое':'📋'}[w.workType]||'🔧';
       const sc={'Выполнено':'t-st','В процессе':'t-prog','Ожидание запчастей':'t-wait','Отложено':'t-wait'}[w.status]||'t-st';
-      h+=`<div class="card ${tc}">
-      <div class="ctop"><span class="tag t-type">${ti} ${w.workType||''}</span><span class="tag ${sc}">${w.status||''}</span></div>
-      <div class="cobj">🔧 ${esc(w.work||'')}</div>
-      ${w.description?`<div class="cdsc">${esc(w.description)}</div>`:''}
-      ${adm?`<div class="cbot"><button class="btn b-gh b-sm" onclick="edit('${w.id}')">✏️</button><button class="btn b-gr b-sm" onclick="del('${w.id}')">🗑</button></div>`:''}
-      </div>`;
+      h+=`<div class="card ${tc}"><div class="ctop"><span class="tag t-type">${ti} ${w.workType||''}</span><span class="tag ${sc}">${w.status||''}</span></div><div class="cobj">🔧 ${esc(w.work||'')}</div>${w.description?`<div class="cdsc">${esc(w.description)}</div>`:''}${adm?`<div class="cbot"><button class="btn b-gh b-sm" onclick="editW('${w.id}')">✏️</button><button class="btn b-gr b-sm" onclick="delW('${w.id}')">🗑</button></div>`:''}</div>`;
     });
   });
-
   document.getElementById('list').innerHTML=h;
 }
 
-/* ===== АВТОРИЗАЦИЯ ===== */
-function toggleAuth(){
-  if(adm){adm=false;updA();return}
-  opn('ovLogin');['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');
-  document.getElementById('pinErr').style.display='none';
-  setTimeout(()=>document.getElementById('d1').focus(),300);
-}
+// ===== АВТОРИЗАЦИЯ =====
+function toggleAuth(){if(adm){adm=false;updA();return}opn('ovLogin');['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');document.getElementById('pinErr').style.display='none';setTimeout(()=>document.getElementById('d1').focus(),300)}
 function pnx(n){if(n<4)document.getElementById('d'+(n+1)).focus();if(n===4)tryPin()}
 function pbk(e,n){if(e.key==='Backspace'&&!document.getElementById('d'+n).value&&n>1)document.getElementById('d'+(n-1)).focus()}
-function tryPin(){
-  const v=['d1','d2','d3','d4'].map(x=>document.getElementById(x).value).join('');
-  if(v===PIN){adm=true;cls('ovLogin');updA()}
-  else if(v.length===4){document.getElementById('pinErr').style.display='block';['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');document.getElementById('d1').focus()}
-}
+function tryPin(){const v=['d1','d2','d3','d4'].map(x=>document.getElementById(x).value).join('');if(v===PIN){adm=true;cls('ovLogin');updA()}else if(v.length===4){document.getElementById('pinErr').style.display='block';['d1','d2','d3','d4'].forEach(x=>document.getElementById(x).value='');document.getElementById('d1').focus()}}
 function updA(){
   document.getElementById('sDot').classList.toggle('on',adm);
   document.getElementById('sLbl').textContent=adm?'Админ':'Гость';
-  const b=document.getElementById('aBtn');
-  b.className=adm?'btn b-gr':'btn b-gh';b.innerHTML=adm?'🔓':'🔐';
+  const b=document.getElementById('aBtn');b.className=adm?'btn b-gr':'btn b-gh';b.innerHTML=adm?'🔓':'🔐';
   document.getElementById('fab').classList.toggle('show',adm);
   document.getElementById('pdfBtn').style.display=adm?'flex':'none';
   document.getElementById('dayBtn').style.display=adm?'flex':'none';
+  document.getElementById('icBtn').style.display=adm?'flex':'none';
   render();
 }
 function opn(id){document.getElementById(id).classList.add('open')}
 function cls(id){document.getElementById(id).classList.remove('open')}
 
-/* ===== ФОРМА ===== */
-function addNew(){
-  if(!adm)return;
-  document.getElementById('fTitle').textContent='➕ Новая запись';
-  document.getElementById('fId').value='';
-  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
-  document.getElementById('fType').value='Автоэлектрика';
-  document.getElementById('fWork').value='';
-  document.getElementById('fDesc').value='';
-  document.getElementById('fSt').value='Выполнено';
-  hideAi();opn('ovForm');
-}
-function edit(id){
-  if(!adm)return;
-  const w=D.find(x=>x.id+''===id+'');if(!w)return;
-  document.getElementById('fTitle').textContent='✏️ Редактирование';
-  document.getElementById('fId').value=w.id;
-  document.getElementById('fDate').value=w.date;
-  document.getElementById('fType').value=w.workType||'Автоэлектрика';
-  document.getElementById('fWork').value=w.work||'';
-  document.getElementById('fDesc').value=w.description||'';
-  document.getElementById('fSt').value=w.status||'Выполнено';
-  hideAi();opn('ovForm');
-}
-function save(){
-  const p={
-    date:document.getElementById('fDate').value,
-    workType:document.getElementById('fType').value,
-    work:document.getElementById('fWork').value.trim(),
-    description:document.getElementById('fDesc').value.trim(),
-    status:document.getElementById('fSt').value
-  };
+// ===== ФОРМА =====
+function addNew(){if(!adm)return;document.getElementById('fTitle').textContent='➕ Новая запись';document.getElementById('fId').value='';document.getElementById('fDate').value=new Date().toISOString().split('T')[0];document.getElementById('fType').value='Автоэлектрика';document.getElementById('fWork').value='';document.getElementById('fDesc').value='';document.getElementById('fSt').value='Выполнено';hideAi();opn('ovForm')}
+function editW(id){if(!adm)return;const w=D.find(x=>x.id+''===id+'');if(!w)return;document.getElementById('fTitle').textContent='✏️ Редактирование';document.getElementById('fId').value=w.id;document.getElementById('fDate').value=w.date;document.getElementById('fType').value=w.workType||'Автоэлектрика';document.getElementById('fWork').value=w.work||'';document.getElementById('fDesc').value=w.description||'';document.getElementById('fSt').value=w.status||'Выполнено';hideAi();opn('ovForm')}
+async function save(){
+  const p={date:document.getElementById('fDate').value,workType:document.getElementById('fType').value,work:document.getElementById('fWork').value.trim(),description:document.getElementById('fDesc').value.trim(),status:document.getElementById('fSt').value};
   if(!p.date||!p.work){alert('Заполните дату и работу!');return}
   if(!p.description)p.description=p.work;
   const id=document.getElementById('fId').value;
   if(id){const i=D.findIndex(x=>x.id+''===id+'');if(i>-1)D[i]={...D[i],...p}}
-  else D.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,6),...p});
-  sv();cls('ovForm');render();
+  else{p.id=Date.now()+'_'+Math.random().toString(36).slice(2,6);D.push(p)}
+  await sv();cls('ovForm');render();
 }
-function del(id){if(!adm||!confirm('Удалить?'))return;D=D.filter(x=>x.id+''!==id+'');sv();render()}
+async function delW(id){if(!adm||!confirm('Удалить?'))return;D=D.filter(x=>x.id+''!==id+'');try{await dbDel('works',id)}catch(e){}sv();render()}
 
-/* ===== ИМПОРТ PDF ===== */
-function openImport(){
-  if(!adm)return;
-  parsed=[];pendFile=null;
-  document.getElementById('pf').value='';
-  document.getElementById('prevWrap').style.display='none';
-  document.getElementById('fileInfo').style.display='none';
-  document.getElementById('scanBox').style.display='none';
-  document.getElementById('prevList').innerHTML='';
-  opn('ovImp');
-}
+// ===== ИМПОРТ PDF =====
+function openImport(){if(!adm)return;parsed=[];pendFile=null;document.getElementById('pf').value='';document.getElementById('prevWrap').style.display='none';document.getElementById('fileInfo').style.display='none';document.getElementById('scanBox').style.display='none';document.getElementById('prevList').innerHTML='';opn('ovImp')}
 function onFile(i){if(i.files[0])handleFile(i.files[0])}
 
-async function handleFile(file){
-  if(!file.name.toLowerCase().endsWith('.pdf')){alert('Только PDF!');return}
-  if(file.size>10*1048576){alert('Максимум 10 МБ!');return}
+function handleFile(file){
+  if(!file.type.includes('pdf')&&!file.name.toLowerCase().endsWith('.pdf')){alert('Только PDF файлы!');return}
+  if(file.size>50*1048576){alert('Файл больше 50 МБ!');return}
+
+  pendFile={blob:file,name:file.name.replace(/\.pdf$/i,''),size:file.size};
+  document.getElementById('fiName').textContent=file.name;
+  document.getElementById('fiSize').textContent=(file.size/1048576).toFixed(1)+' МБ';
+  document.getElementById('fileInfo').style.display='block';
+
+  document.getElementById('scanBox').style.display='block';
+  document.getElementById('scanTxt').textContent='Читаю PDF...';
 
   const rd=new FileReader();
   rd.onload=async e=>{
-    pendFile={data:e.target.result,name:file.name.replace(/\.pdf$/i,''),size:file.size};
-    document.getElementById('fiName').textContent=file.name;
-    document.getElementById('fiSize').textContent=(file.size/1048576).toFixed(1)+' МБ';
-    document.getElementById('fileInfo').style.display='block';
-
-    document.getElementById('scanBox').style.display='block';
-    document.getElementById('scanTxt').textContent='Читаю PDF...';
     try{
       const lines=await readPdf(e.target.result);
       document.getElementById('scanTxt').textContent='Распознаю работы...';
@@ -682,31 +652,23 @@ async function handleFile(file){
       showPreview();
     }catch(err){
       document.getElementById('scanBox').style.display='none';
-      alert('Не удалось прочитать PDF.\nВозможно это скан (картинка).\nМожно сохранить как файл.');
+      document.getElementById('prevWrap').style.display='block';
+      document.getElementById('prevCnt').textContent='0';
+      document.getElementById('prevList').innerHTML='<div style="padding:16px;text-align:center;color:var(--txt3);font-size:13px">Текст не распознан (возможно скан).<br>PDF будет сохранён как файл.</div>';
     }
   };
-  rd.readAsDataURL(file);
+  rd.readAsArrayBuffer(file);
 }
 
-async function readPdf(dataUrl){
-  const raw=atob(dataUrl.split(',')[1]);
-  const arr=new Uint8Array(raw.length);
-  for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
-  const pdf=await pdfjsLib.getDocument({data:arr}).promise;
+async function readPdf(buf){
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
   const lines=[];
   for(let p=1;p<=pdf.numPages;p++){
     const page=await pdf.getPage(p);
     const tc=await page.getTextContent();
     const rows={};
-    tc.items.forEach(it=>{
-      const y=Math.round(it.transform[5]/3)*3;
-      if(!rows[y])rows[y]={y,parts:[]};
-      rows[y].parts.push({x:it.transform[4],s:it.str});
-    });
-    Object.values(rows).sort((a,b)=>b.y-a.y).forEach(r=>{
-      const t=r.parts.sort((a,b)=>a.x-b.x).map(x=>x.s).join(' ').replace(/\s+/g,' ').trim();
-      if(t)lines.push(t);
-    });
+    tc.items.forEach(it=>{const y=Math.round(it.transform[5]/3)*3;if(!rows[y])rows[y]={y,parts:[]};rows[y].parts.push({x:it.transform[4],s:it.str})});
+    Object.values(rows).sort((a,b)=>b.y-a.y).forEach(r=>{const t=r.parts.sort((a,b)=>a.x-b.x).map(x=>x.s).join(' ').replace(/\s+/g,' ').trim();if(t)lines.push(t)});
   }
   return lines;
 }
@@ -717,253 +679,158 @@ function detectDate(line){
   m=line.match(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/);
   if(m){let y=m[3];if(y.length===2)y='20'+y;return `${y}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`}
   m=line.match(/(\d{1,2})\s*[-–]?\s*(январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр)\w*/i);
-  if(m){
-    const mi=MG.findIndex(x=>m[2].toLowerCase().startsWith(x));
-    if(mi>-1)return `${now.getFullYear()}-${String(mi+1).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
-  }
+  if(m){const mi=MG.findIndex(x=>m[2].toLowerCase().startsWith(x));if(mi>-1)return `${now.getFullYear()}-${String(mi+1).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`}
   m=line.match(/^(\d{1,2})[\s.)]/);
   if(m&&+m[1]>=1&&+m[1]<=31)return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
   return null;
 }
-function detectHours(line){
-  let m=line.match(/(\d{1,2})\s*(?:ч|час)/i);
-  if(m&&+m[1]>=1&&+m[1]<=24)return +m[1];
-  m=line.match(/смена\s*[-–:]?\s*(\d{1,2})/i);
-  if(m&&+m[1]>=1&&+m[1]<=24)return +m[1];
-  return null;
-}
-function isDayOff(line){return /выходн|вых\.|отгул|отпуск|больнич/i.test(line)}
-
+function detectHours(l){let m=l.match(/(\d{1,2})\s*(?:ч|час)/i);if(m&&+m[1]>=1&&+m[1]<=24)return +m[1];m=l.match(/смена\s*[-–:]?\s*(\d{1,2})/i);if(m&&+m[1]>=1&&+m[1]<=24)return +m[1];return null}
+function isDayOff(l){return /выходн|вых\.|отгул|отпуск|больнич/i.test(l)}
 function detectType(t){
   const s=t.toLowerCase();
-  if(/автоэлектр|man\b|volvo|scania|daf|iveco|мерседес|mercedes|камаз|маз|каt|cat\b|komatsu|hitachi|jcb|погрузчик|самосвал|тягач|абс|abs|стартер|генератор|акб|аккумул|косу|коса|жгут|датчик|фар[аы]|габарит|поворотник|проводк[аи] авто/.test(s))return'Автоэлектрика';
-  if(/щит|кабел|розетк|освещен|автомат[ы]?\b|выключател|электропровод|распредел|лампы|светильник|двер|электрик|фаза|нол[ья]|заземл|прокладк|протяжк/.test(s))return'Электрика';
-  if(/подсоб|помощ|доставк|склад|погруз|уборк|принес|перевоз|инвентар|сварщик/.test(s))return'Подсобные работы';
+  if(/автоэлектр|man\b|volvo|scania|daf|iveco|камаз|маз|cat\b|komatsu|jcb|погрузчик|самосвал|тягач|абс|abs|стартер|генератор|акб|аккумул|косу|коса|жгут|датчик|фар[аы]|габарит|поворотник/.test(s))return'Автоэлектрика';
+  if(/щит|кабел|розетк|освещен|автомат[ы]?\b|выключател|распредел|лампы|светильник|двер|электрик|фаза|заземл|прокладк|протяжк/.test(s))return'Электрика';
+  if(/подсоб|помощ|доставк|склад|погруз|уборк|сварщик/.test(s))return'Подсобные работы';
   if(/на базе|база\b|бокс|цех|мастерск/.test(s))return'Работа на базе';
   return'Другое';
 }
-
 function parseLines(lines){
-  const out=[];
-  let cur=null;
+  const out=[];let cur=null;
   lines.forEach(raw=>{
-    let line=raw.trim();
-    if(line.length<3)return;
-    if(/^(табель|итого|подпись|дата|ф\.и\.о|фио|месяц|№|страниц)/i.test(line)&&line.length<25)return;
-
+    const line=raw.trim();
+    if(line.length<3||/^(табель|итого|подпись|дата|ф\.и\.о|фио|месяц|страниц)/i.test(line)&&line.length<25)return;
     const dt=detectDate(line);
     const hrs=detectHours(line);
     const off=isDayOff(line);
-
-    if(dt)cur={date:dt,hours:hrs,off:off};
-
-    // убираем дату и часы из текста
-    let txt=line
-      .replace(/(\d{4})[-.\/](\d{1,2})[-.\/](\d{1,2})/,'')
-      .replace(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/,'')
-      .replace(/(\d{1,2})\s*[-–]?\s*(январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр)\w*/i,'')
-      .replace(/(пн|вт|ср|чт|пт|сб|вс)[,.]?/i,'')
-      .replace(/(\d{1,2})\s*(?:ч|час)\.?/i,'')
-      .replace(/смена\s*[-–:]?\s*\d{1,2}/i,'')
-      .replace(/^[\s\-–—:.,|)]+/,'')
-      .replace(/\s+/g,' ')
-      .trim();
-
-    if(off&&cur){
-      if(!out.some(o=>o.date===cur.date&&o.off))
-        out.push({date:cur.date,hours:null,off:true,type:'Другое',text:'Выходной'});
-      return;
-    }
-
-    if(txt.length<4)return;
-    if(/^вид работ|^работа$|^описание|^статус/i.test(txt))return;
-
-    const d=cur?cur.date:null;
-    if(!d)return;
-
-    // разделяем несколько работ в одной строке
+    if(dt)cur={date:dt,hours:hrs,off};
+    let txt=line.replace(/(\d{4})[-.\/](\d{1,2})[-.\/](\d{1,2})/,'').replace(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/,'').replace(/(\d{1,2})\s*[-–]?\s*(январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр)\w*/gi,'').replace(/(пн|вт|ср|чт|пт|сб|вс)[,.]?/gi,'').replace(/(\d{1,2})\s*(?:ч|час)\.?/gi,'').replace(/смена\s*[-–:]?\s*\d{1,2}/gi,'').replace(/^[\s\-–—:.,|)]+/,'').replace(/\s+/g,' ').trim();
+    if(off&&cur){if(!out.some(o=>o.date===cur.date&&o.off))out.push({date:cur.date,hours:null,off:true,type:'Другое',text:'Выходной',sel:true});return}
+    if(txt.length<4||/^вид работ|^работа$|^описание|^статус/i.test(txt))return;
+    const d=cur?cur.date:null;if(!d)return;
     const parts=txt.split(/\s*[;•]\s*|\s{3,}/).filter(x=>x.trim().length>3);
-    (parts.length?parts:[txt]).forEach(p=>{
-      out.push({
-        date:d,
-        hours:cur.hours,
-        off:false,
-        type:detectType(p),
-        text:p.charAt(0).toUpperCase()+p.slice(1)
-      });
-    });
+    (parts.length?parts:[txt]).forEach(p=>{out.push({date:d,hours:cur.hours,off:false,type:detectType(p),text:p.charAt(0).toUpperCase()+p.slice(1),sel:true})});
   });
   return out;
 }
 
 function showPreview(){
-  const w=document.getElementById('prevWrap');
-  if(!parsed.length){
-    w.style.display='block';
-    document.getElementById('prevCnt').textContent='0';
-    document.getElementById('prevList').innerHTML='<div style="padding:16px;text-align:center;color:var(--txt3);font-size:13px">Работы не распознаны.<br>Можно сохранить PDF как файл.</div>';
-    return;
-  }
-  w.style.display='block';
+  const w=document.getElementById('prevWrap');w.style.display='block';
+  if(!parsed.length){document.getElementById('prevCnt').textContent='0';document.getElementById('prevList').innerHTML='<div style="padding:16px;text-align:center;color:var(--txt3);font-size:13px">Работы не найдены.<br>PDF сохранится как файл.</div>';return}
   document.getElementById('prevCnt').textContent=parsed.length+' шт';
   let h='';
   parsed.forEach((p,i)=>{
-    if(p.off){
-      h+=`<div class="prow" id="pr${i}">
-      <div class="prow-top">
-      <input type="checkbox" class="prow-chk" checked onchange="togRow(${i},this)">
-      <input type="date" class="prow-date" value="${p.date}" onchange="parsed[${i}].date=this.value">
-      <span style="font-size:12px;color:#f472b6;font-weight:700">🏖 Вых.</span>
-      </div></div>`;
-      return;
-    }
-    const opts=['Автоэлектрика','Электрика','Работа на базе','Подсобные работы','Другое']
-      .map(t=>`<option ${t===p.type?'selected':''}>${t}</option>`).join('');
-    h+=`<div class="prow" id="pr${i}">
-    <div class="prow-top">
-    <input type="checkbox" class="prow-chk" checked onchange="togRow(${i},this)">
-    <input type="date" class="prow-date" value="${p.date}" onchange="parsed[${i}].date=this.value">
-    <input type="number" class="prow-h" value="${p.hours||''}" placeholder="ч" min="1" max="24" onchange="parsed[${i}].hours=this.value?+this.value:null">
-    </div>
-    <select class="prow-type" onchange="parsed[${i}].type=this.value">${opts}</select>
-    <textarea class="prow-txt" onchange="parsed[${i}].text=this.value">${esc(p.text)}</textarea>
-    </div>`;
+    if(p.off){h+=`<div class="prow" id="pr${i}"><div class="prow-top"><input type="checkbox" class="prow-chk" ${p.sel?'checked':''} onchange="togRow(${i},this)"><input type="date" class="prow-date" value="${p.date}" onchange="parsed[${i}].date=this.value"><span style="font-size:12px;color:#f472b6;font-weight:700">🏖 Вых.</span></div></div>`;return}
+    const opts=['Автоэлектрика','Электрика','Работа на базе','Подсобные работы','Другое'].map(t=>`<option ${t===p.type?'selected':''}>${t}</option>`).join('');
+    h+=`<div class="prow" id="pr${i}"><div class="prow-top"><input type="checkbox" class="prow-chk" ${p.sel?'checked':''} onchange="togRow(${i},this)"><input type="date" class="prow-date" value="${p.date}" onchange="parsed[${i}].date=this.value"><input type="number" class="prow-h" value="${p.hours||''}" placeholder="ч" min="1" max="24" onchange="parsed[${i}].hours=this.value?+this.value:null"></div><select class="prow-type" onchange="parsed[${i}].type=this.value">${opts}</select><textarea class="prow-txt" onchange="parsed[${i}].text=this.value">${esc(p.text)}</textarea></div>`;
   });
   document.getElementById('prevList').innerHTML=h;
-  parsed.forEach(p=>p.sel=true);
 }
 function togRow(i,el){parsed[i].sel=el.checked;document.getElementById('pr'+i).classList.toggle('off',!el.checked)}
-function selAll(v){
-  parsed.forEach((p,i)=>{p.sel=v;const c=document.querySelectorAll('.prow-chk')[i];if(c)c.checked=v;
-  const r=document.getElementById('pr'+i);if(r)r.classList.toggle('off',!v)});
-}
-async function aiAllRows(){
-  for(let i=0;i<parsed.length;i++){
-    if(parsed[i].off||!parsed[i].sel)continue;
-    parsed[i].text=await localAi(parsed[i].text);
-  }
-  showPreview();
-}
+function selAll(v){parsed.forEach((p,i)=>{p.sel=v;const c=document.querySelectorAll('.prow-chk')[i];if(c)c.checked=v;const r=document.getElementById('pr'+i);if(r)r.classList.toggle('off',!v)})}
+async function aiAllRows(){for(let i=0;i<parsed.length;i++){if(parsed[i].off||!parsed[i].sel)continue;parsed[i].text=await localAi(parsed[i].text)}showPreview()}
 
-function doImport(){
+async function doImport(){
   let added=0;
-  parsed.forEach(p=>{
-    if(!p.sel)return;
-    if(p.off){dayH[p.date]='В';return}
+  for(const p of parsed){
+    if(!p.sel)continue;
+    if(p.off){dayH[p.date]='В';continue}
     if(p.hours)dayH[p.date]=p.hours;
-    D.push({
-      id:Date.now()+'_'+Math.random().toString(36).slice(2,7),
-      date:p.date,workType:p.type,
-      work:p.text.length>70?p.text.slice(0,70)+'…':p.text,
-      description:p.text,status:'Выполнено'
-    });
+    const w={id:Date.now()+'_'+Math.random().toString(36).slice(2,7),date:p.date,workType:p.type,work:p.text.length>70?p.text.slice(0,70)+'…':p.text,description:p.text,status:'Выполнено'};
+    D.push(w);
+    try{await dbPut('works',w)}catch(e){}
     added++;
-  });
+    await new Promise(r=>setTimeout(r,2));
+  }
 
   if(document.getElementById('keepFile').checked&&pendFile){
     const d=parsed.length?new Date(parsed[0].date+'T00:00:00'):now;
-    pdfs.push({id:Date.now()+'',name:pendFile.name,month:d.getMonth(),year:d.getFullYear(),data:pendFile.data,size:pendFile.size});
-    svP();
+    const pdfObj={id:Date.now()+'',name:pendFile.name,month:d.getMonth(),year:d.getFullYear(),blob:pendFile.blob,size:pendFile.size};
+    await addPdf(pdfObj);
   }
 
-  sv();svH();cls('ovImp');
-  if(parsed.length){
-    const d=new Date(parsed[0].date+'T00:00:00');
-    now=new Date(d.getFullYear(),d.getMonth(),1);updM();
-  }
+  svH();localStorage.setItem('t_d5',JSON.stringify(D));
+  cls('ovImp');
+  if(parsed.length){const d=new Date(parsed[0].date+'T00:00:00');now=new Date(d.getFullYear(),d.getMonth(),1);updM()}
   render();
-  alert('✅ Импортировано записей: '+added);
+  alert(`✅ Импортировано: ${added} записей`);
 }
 
-/* ===== PDF ПРОСМОТР ===== */
-function viewPdf(id){
-  const p=pdfs.find(x=>x.id===id);if(!p)return;
+// ===== PDF ПРОСМОТР =====
+async function viewPdf(id){
+  const allPdfs=await getPdfs();
+  const p=allPdfs.find(x=>x.id===id);if(!p)return;
   document.getElementById('pdfvT').textContent=p.name;
-  document.getElementById('pdfFrame').src=p.data;
   document.getElementById('pdfv').classList.add('open');
   document.getElementById('pdfv').dataset.id=id;
-}
-function closePdfView(){document.getElementById('pdfv').classList.remove('open');document.getElementById('pdfFrame').src=''}
-function downloadPdf(){
-  const p=pdfs.find(x=>x.id===document.getElementById('pdfv').dataset.id);if(!p)return;
-  const a=document.createElement('a');a.href=p.data;a.download=p.name+'.pdf';a.click();
-}
-function delPdf(id){if(!adm||!confirm('Удалить PDF?'))return;pdfs=pdfs.filter(x=>x.id!==id);svP();render()}
 
-/* ===== AI ===== */
+  const frame=document.getElementById('pdfFrame');
+  const alt=document.getElementById('pdfAlt');
+
+  if(p.blob){
+    const url=URL.createObjectURL(p.blob);
+    frame.style.display='block';alt.style.display='none';
+    frame.src=url;
+    frame._blobUrl=url;
+  }else if(p.data){
+    frame.style.display='block';alt.style.display='none';
+    frame.src=p.data;
+  }else{
+    frame.style.display='none';alt.style.display='flex';
+    document.getElementById('pdfAltTxt').textContent='Файл не найден';
+  }
+}
+
+function closePdfView(){
+  const frame=document.getElementById('pdfFrame');
+  if(frame._blobUrl){URL.revokeObjectURL(frame._blobUrl);frame._blobUrl=null}
+  frame.src='';
+  document.getElementById('pdfv').classList.remove('open');
+}
+
+async function downloadPdf(){
+  const id=document.getElementById('pdfv').dataset.id;
+  const allPdfs=await getPdfs();
+  const p=allPdfs.find(x=>x.id===id);if(!p)return;
+  const a=document.createElement('a');
+  if(p.blob)a.href=URL.createObjectURL(p.blob);
+  else if(p.data)a.href=p.data;
+  else return;
+  a.download=p.name+'.pdf';a.click();
+}
+
+async function delPdf(id){
+  if(!adm||!confirm('Удалить PDF?'))return;
+  await removePdf(id);render();
+}
+
+// ===== AI =====
 function hideAi(){['aiO','aiOk','aiLd'].forEach(x=>document.getElementById(x).style.display='none')}
 async function aiFix(){
-  const t=document.getElementById('fDesc').value.trim();
-  if(!t){alert('Сначала опишите работу!');return}
-  document.getElementById('aiLd').style.display='flex';
-  document.getElementById('aiO').style.display='none';
-  document.getElementById('aiOk').style.display='none';
+  const t=document.getElementById('fDesc').value.trim();if(!t){alert('Сначала опишите работу!');return}
+  document.getElementById('aiLd').style.display='flex';document.getElementById('aiO').style.display='none';document.getElementById('aiOk').style.display='none';
   let r;
-  if(OPENAI_KEY){
-    try{
-      const resp=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
-        body:JSON.stringify({model:'gpt-3.5-turbo',messages:[
-          {role:'system',content:'Ты помощник электрика и автоэлектрика. Перепиши описание работы грамотным техническим языком. Кратко, профессионально. По-русски.'},
-          {role:'user',content:t}],max_tokens:300})});
-      const j=await resp.json();r=j.choices[0].message.content.trim();
-    }catch(e){r=await localAi(t)}
-  }else r=await localAi(t);
+  if(OPENAI_KEY){try{const resp=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},body:JSON.stringify({model:'gpt-3.5-turbo',messages:[{role:'system',content:'Ты помощник электрика. Перепиши описание работы грамотным техническим языком. Кратко, профессионально. По-русски.'},{role:'user',content:t}],max_tokens:300})});const j=await resp.json();r=j.choices[0].message.content.trim()}catch(e){r=await localAi(t)}}else r=await localAi(t);
   document.getElementById('aiLd').style.display='none';
-  const o=document.getElementById('aiO');o.style.display='block';o.textContent=r;o.dataset.t=r;
-  document.getElementById('aiOk').style.display='block';
+  const o=document.getElementById('aiO');o.style.display='block';o.textContent=r;o.dataset.t=r;document.getElementById('aiOk').style.display='block';
 }
 function aiUse(){document.getElementById('fDesc').value=document.getElementById('aiO').dataset.t;hideAi()}
-
 function localAi(text){
   return new Promise(res=>{setTimeout(()=>{
     let t=text;
-    const d={
-      'протяжка кабеля':'прокладка кабельной линии','от шита':'от распределительного щита',
-      'от щита':'от распределительного щита','к автоматическим дверям':'к электроприводу автоматических дверей',
-      'приёмка':'зона приёмки','приемка':'зона приёмки','замена косы':'замена жгута проводов (косы)',
-      'коса':'жгут проводов','к датчикам скорость':'к датчикам скорости','к дачикам':'к датчикам',
-      'дачик':'датчик','доставка запчастей':'доставка запасных частей','помошь сваршику':'помощь сварщику',
-      'помощь сварщику':'оказание помощи сварщику','поиск материалов':'подбор материалов',
-      'в поисков материалов':'в подборе материалов','для выполнения задачи':'для выполнения производственного задания',
-      'абс':'АБС (антиблокировочная система)','устанение':'устранение',
-      'устранение проблем':'устранение неисправностей','не работает':'неисправен',
-      'поменял':'произведена замена','заменил':'выполнена замена','поставил':'установлен',
-      'починил':'устранена неисправность','глючит':'работает некорректно',
-      'проверил':'проведена диагностика','проводка':'электропроводка','провода':'электропроводка',
-      'акум':'АКБ','аккум':'АКБ','аккумулятор':'АКБ (аккумуляторная батарея)',
-      'лампочка':'лампа','поворотник':'указатель поворота','движок':'двигатель',
-      'мозги':'ЭБУ','подключил':'выполнено подключение','снял':'демонтирован',
-      'разобрал':'произведён демонтаж','собрал':'произведён монтаж',
-      'кз':'короткое замыкание','коротит':'обнаружено короткое замыкание',
-      'прозвонил':'выполнена прозвонка цепей','окислились':'обнаружено окисление контактов',
-      'приборка':'панель приборов','щиток':'электрощит','автомат':'автоматический выключатель',
-      'фара':'фара головного освещения','габариты':'габаритные огни',
-      'почистил':'произведена очистка','сделал':'выполнено','протянул':'проложен',
-      'выбивает автомат':'срабатывает защита автоматического выключателя',
-      'на базе':'на производственной базе'
-    };
+    const d={'протяжка кабеля':'прокладка кабельной линии','от шита':'от распределительного щита','от щита':'от распределительного щита','замена косы':'замена жгута проводов (косы)','коса':'жгут проводов','к дачикам':'к датчикам','дачик':'датчик','помошь сваршику':'помощь сварщику','помощь сварщику':'оказание помощи сварщику','в поисков материалов':'в подборе материалов','для выполнения задачи':'для выполнения производственного задания','абс':'АБС (антиблокировочная система)','устанение':'устранение','устранение проблем':'устранение неисправностей','не работает':'неисправен','поменял':'произведена замена','заменил':'выполнена замена','поставил':'установлен','починил':'устранена неисправность','глючит':'работает некорректно','проверил':'проведена диагностика','проводка':'электропроводка','провода':'электропроводка','акум':'АКБ','аккум':'АКБ','аккумулятор':'АКБ (аккумуляторная батарея)','лампочка':'лампа','движок':'двигатель','мозги':'ЭБУ','подключил':'выполнено подключение','снял':'демонтирован','кз':'короткое замыкание','прозвонил':'выполнена прозвонка цепей','щиток':'электрощит','автомат':'автоматический выключатель','сделал':'выполнено','протянул':'проложен'};
     t=t.charAt(0).toUpperCase()+t.slice(1);
-    Object.entries(d).sort((a,b)=>b[0].length-a[0].length).forEach(([k,v])=>{
-      t=t.replace(new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),v);
-    });
+    Object.entries(d).sort((a,b)=>b[0].length-a[0].length).forEach(([k,v])=>{t=t.replace(new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),v)});
     if(!/[.!]$/.test(t.trim()))t=t.trim()+'.';
     res(t);
   },300)});
 }
 
-/* ===== ЭКСПОРТ ===== */
+// ===== ЭКСПОРТ =====
 function toCSV(){
   const mo=now.getMonth(),yr=now.getFullYear();
   const it=D.filter(w=>{const d=new Date(w.date);return d.getMonth()===mo&&d.getFullYear()===yr}).sort((a,b)=>new Date(a.date)-new Date(b.date));
   let csv='Дата,Часы,Вид работы,Работа,Описание,Статус\n';
-  it.forEach(w=>{
-    const hv=dayH[w.date]==='В'?'Выходной':(dayH[w.date]||'');
-    csv+=`"${w.date}","${hv}","${w.workType}","${w.work}","${w.description}","${w.status}"\n`;
-  });
-  Object.keys(dayH).filter(d=>{const x=new Date(d);return x.getMonth()===mo&&x.getFullYear()===yr&&dayH[d]==='В'}).forEach(d=>{
-    csv+=`"${d}","Выходной","","","",""\n`;
-  });
+  it.forEach(w=>{const hv=dayH[w.date]==='В'?'Выходной':(dayH[w.date]||'');csv+=`"${w.date}","${hv}","${w.workType}","${w.work}","${w.description}","${w.status}"\n`});
   const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`Табель_${MN[mo]}_${yr}.csv`;a.click();
 }
@@ -975,29 +842,50 @@ function toPrint(){
   const hd=Object.keys(dayH).filter(inM);
   const wd=hd.filter(d=>dayH[d]!=='В');
   const od=hd.filter(d=>dayH[d]==='В');
-  const shifts=[...new Set([...it.map(w=>w.date),...wd])].length;
   const th=wd.reduce((s,d)=>s+(parseInt(dayH[d])||0),0);
-
-  let h=`<html><head><meta charset="utf-8"><title>Табель ${MN[mo]} ${yr}</title>
-  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:11px;color:#333}
-  h1{font-size:18px;margin-bottom:4px}h2{font-size:13px;color:#666;margin-bottom:12px;font-weight:normal}
-  table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px 7px;text-align:left;font-size:10px}
-  th{background:#e8e8e8;font-weight:bold}tr:nth-child(even){background:#f9f9f9}
-  .sum{padding:10px;background:#f0f0f0;border-radius:8px;font-size:12px;margin-bottom:12px}
-  .f{margin-top:18px;font-size:10px;color:#999}</style></head><body>
-  <h1>⚡ Табель работ</h1><h2>${MN[mo]} ${yr}</h2>
-  <div class="sum"><b>Итого:</b> Смен: ${shifts} &nbsp;|&nbsp; Часов: ${th} &nbsp;|&nbsp; Выходных: ${od.length} &nbsp;|&nbsp; Записей: ${it.length}</div>
-  <table><tr><th>№</th><th>Дата</th><th>Часы</th><th>Вид</th><th>Работа</th><th>Описание</th><th>Статус</th></tr>`;
-  it.forEach((w,i)=>{
-    const d=new Date(w.date+'T00:00:00').toLocaleDateString('ru-RU');
-    const hv=dayH[w.date]==='В'?'Вых.':(dayH[w.date]||'—');
-    h+=`<tr><td>${i+1}</td><td>${d}</td><td>${hv}</td><td>${w.workType||''}</td><td>${w.work||''}</td><td>${w.description||''}</td><td>${w.status||''}</td></tr>`;
-  });
-  od.forEach(d=>{
-    h+=`<tr style="background:#fdf2f8"><td>—</td><td>${new Date(d+'T00:00:00').toLocaleDateString('ru-RU')}</td><td>Выходной</td><td colspan="4">🏖 Выходной день</td></tr>`;
-  });
+  const shifts=[...new Set([...it.map(w=>w.date),...wd])].length;
+  let h=`<html><head><meta charset="utf-8"><title>Табель ${MN[mo]} ${yr}</title><style>body{font-family:Arial,sans-serif;padding:20px;font-size:11px;color:#333}h1{font-size:18px;margin-bottom:4px}h2{font-size:13px;color:#666;margin-bottom:12px;font-weight:normal}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:5px 7px;text-align:left;font-size:10px}th{background:#e8e8e8;font-weight:bold}tr:nth-child(even){background:#f9f9f9}.sum{padding:10px;background:#f0f0f0;border-radius:8px;font-size:12px;margin-bottom:12px}.f{margin-top:18px;font-size:10px;color:#999}</style></head><body><h1>⚡ Табель работ</h1><h2>${MN[mo]} ${yr}</h2><div class="sum"><b>Итого:</b> Смен: ${shifts} | Часов: ${th} | Выходных: ${od.length} | Записей: ${it.length}</div><table><tr><th>№</th><th>Дата</th><th>Часы</th><th>Вид</th><th>Работа</th><th>Описание</th><th>Статус</th></tr>`;
+  it.forEach((w,i)=>{const d=new Date(w.date+'T00:00:00').toLocaleDateString('ru-RU');const hv=dayH[w.date]==='В'?'Вых.':(dayH[w.date]||'—');h+=`<tr><td>${i+1}</td><td>${d}</td><td>${hv}</td><td>${w.workType||''}</td><td>${w.work||''}</td><td>${w.description||''}</td><td>${w.status||''}</td></tr>`});
+  od.forEach(d=>{h+=`<tr style="background:#fdf2f8"><td>—</td><td>${new Date(d+'T00:00:00').toLocaleDateString('ru-RU')}</td><td>Вых.</td><td colspan="4">🏖 Выходной день</td></tr>`});
   h+=`</table><div class="f">Сформировано: ${new Date().toLocaleString('ru-RU')}</div></body></html>`;
-  const w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(()=>w.print(),600);
+  const w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(()=>win.print(),600);
+}
+
+// ===== ГЕНЕРАТОР ИКОНОК PWA =====
+function downloadIcon(size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // Красивый градиентный фон
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#1e3a5f');
+  grad.addColorStop(1, '#0f172a');
+  ctx.fillStyle = grad;
+  
+  // Скругленный квадрат
+  ctx.beginPath();
+  ctx.roundRect(0, 0, size, size, size * 0.18);
+  ctx.fill();
+
+  // Иконка молнии ⚡
+  ctx.font = `${size * 0.55}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('⚡', size / 2, size * 0.52);
+
+  // Скачивание
+  const a = document.createElement('a');
+  a.download = `icon-${size}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function downloadIcons() {
+  downloadIcon(192);
+  setTimeout(() => downloadIcon(512), 350);
 }
 
 init();
